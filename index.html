@@ -1,0 +1,4362 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+    <title>ASTHERUS - The Original Name Behind $ASTER</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Space+Grotesk:wght@300;400;700&family=Orbitron:wght@400;700;900&family=Playfair+Display:wght@400;700;900&display=swap");
+
+      @font-face {
+        font-family: "Zachar";
+        src: url("fonts/Zachar.otf") format("opentype");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-teal: #2a5f5f;
+        --dark-teal: #1a3d3d;
+        --primary-orange: #ff8c00;
+        --bright-orange: #ff9500;
+        --sand: #d4a574;
+        --dark: #0a0a0a;
+        --light: #f5e6d3;
+        --accent-red: #8b0000;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background: #0a0a0a;
+        color: var(--light);
+        overflow-x: hidden;
+        cursor: default;
+        width: 100%;
+        position: relative;
+      }
+
+      html {
+        overflow-x: hidden;
+        width: 100%;
+      }
+
+      .cursor {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--primary-orange);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transition: all 0.1s ease;
+        mix-blend-mode: difference;
+      }
+
+      .cursor-follower {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 140, 0, 0.1);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9998;
+        transition: all 0.3s ease;
+      }
+
+      .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: var(--dark);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 1s, visibility 1s;
+      }
+
+      .loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .loader-content {
+        text-align: center;
+      }
+
+      .loader-logo {
+        width: 300px;
+        height: auto;
+        margin: 0 auto 35px auto;
+        display: block;
+      }
+
+      .loader-logo svg {
+        width: 100%;
+        height: auto;
+        fill: white;
+        animation: glitch-img 2s infinite;
+      }
+
+      .language-selector {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 0;
+      }
+
+      /* Flagi - główne style */
+      /* Flagi - główne style */
+      .flag-icon {
+        width: 24px;
+        height: 18px;
+        display: inline-block;
+        border-radius: 3px;
+        object-fit: cover;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Flagi w loaderze */
+      .lang-btn {
+        width: auto;
+        height: auto;
+        border: none;
+        background: transparent;
+        color: var(--light);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: "Crimson Text", serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 8px;
+        position: relative;
+        line-height: 1;
+        filter: drop-shadow(0 0 0px rgba(255, 140, 0, 0));
+        transform: scale(1);
+        border-radius: 6px;
+        border: 2px solid transparent;
+      }
+
+      .lang-btn:hover {
+        transform: scale(1.08);
+        filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.4));
+        background: rgba(255, 140, 0, 0.1);
+        border-color: var(--primary-orange);
+      }
+
+      .lang-btn.active {
+        filter: drop-shadow(0 0 0px rgba(255, 140, 0, 0));
+        background: transparent;
+        border-color: transparent;
+        transform: scale(1);
+      }
+
+      .lang-btn.active:hover {
+        filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.4));
+        background: rgba(255, 140, 0, 0.1);
+        border-color: var(--primary-orange);
+      }
+
+      .language-label {
+        display: block;
+        color: var(--sand);
+        font-size: 0.684em;
+        margin-bottom: 20px;
+        font-family: "Zachar", serif;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        opacity: 0.9;
+      }
+
+      .header-lang-selector {
+        margin-left: 5px;
+        position: relative;
+        display: inline-block;
+      }
+
+      .header-lang-current {
+        font-size: 1.5em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 3px 8px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .header-lang-current:hover {
+        transform: scale(1.15);
+        background: rgba(255, 140, 0, 0.1);
+      }
+
+      /* Flagi w headerze */
+      .header-lang-current .flag-icon {
+        width: 26px;
+        height: 19.5px;
+      }
+
+      .header-lang-option .flag-icon {
+        width: 26px;
+        height: 19.5px;
+      }
+
+      .header-lang-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: rgba(10, 10, 10, 0.98);
+        border: 2px solid var(--primary-orange);
+        border-radius: 12px;
+        padding: 10px;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+        min-width: 120px;
+        box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
+        z-index: 1000;
+      }
+
+      .header-lang-dropdown.active {
+        display: flex;
+      }
+
+      .header-lang-option {
+        font-size: 1.3em;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-align: center;
+        border: 1px solid transparent;
+      }
+
+      .header-lang-option:hover {
+        background: rgba(255, 140, 0, 0.2);
+        border-color: var(--primary-orange);
+        transform: scale(1.1);
+      }
+
+      @keyframes glitch-img {
+        0%,
+        100% {
+          filter: brightness(1) drop-shadow(2px 2px 0 var(--bright-orange))
+            drop-shadow(-2px -2px 0 var(--sand));
+          transform: scale(1);
+        }
+        25% {
+          filter: brightness(1.2) drop-shadow(-2px 2px 0 var(--bright-orange))
+            drop-shadow(2px -2px 0 var(--sand));
+          transform: scale(1.02) translateX(-2px);
+        }
+        50% {
+          filter: brightness(0.9) drop-shadow(2px -2px 0 var(--bright-orange))
+            drop-shadow(-2px 2px 0 var(--sand));
+          transform: scale(0.98) translateY(2px);
+        }
+        75% {
+          filter: brightness(1.1) drop-shadow(-2px -2px 0 var(--bright-orange))
+            drop-shadow(2px 2px 0 var(--sand));
+          transform: scale(1.01) translateX(2px);
+        }
+      }
+
+      @keyframes glitch {
+        0%,
+        100% {
+          text-shadow: 2px 2px 0 var(--bright-orange), -2px -2px 0 var(--sand);
+        }
+        25% {
+          text-shadow: -2px 2px 0 var(--bright-orange), 2px -2px 0 var(--sand);
+        }
+        50% {
+          text-shadow: 2px -2px 0 var(--bright-orange), -2px 2px 0 var(--sand);
+        }
+        75% {
+          text-shadow: -2px -2px 0 var(--bright-orange), 2px 2px 0 var(--sand);
+        }
+      }
+
+      header {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        padding: 20px 0;
+        background: linear-gradient(
+          180deg,
+          rgba(10, 10, 10, 0.95) 0%,
+          rgba(10, 10, 10, 0) 100%
+        );
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+
+      header.scrolled {
+        background: rgba(10, 10, 10, 0.98);
+        padding: 15px 0;
+        box-shadow: 0 5px 20px rgba(255, 140, 0, 0.2);
+      }
+
+      nav {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .logo:hover {
+        transform: scale(1.05);
+      }
+
+      .logo-img {
+        height: 35px;
+        width: auto;
+        filter: drop-shadow(0 2px 5px rgba(255, 140, 0, 0.3));
+        transition: all 0.3s ease;
+      }
+
+      .logo-img svg {
+        height: 100%;
+        width: auto;
+        fill: var(--light);
+      }
+
+      .logo:hover .logo-img {
+        filter: drop-shadow(0 4px 10px rgba(255, 140, 0, 0.6));
+      }
+
+      .nav-menu {
+        display: flex;
+        gap: 5px;
+        list-style: none;
+        align-items: center;
+      }
+
+      .nav-link {
+        color: var(--light);
+        text-decoration: none;
+        padding: 8px 18px;
+        border: 2px solid transparent;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        font-weight: 400;
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        font-family: "Crimson Text", serif;
+        font-size: 0.95em;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .nav-link::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: var(--primary-orange);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+        z-index: -1;
+      }
+
+      .nav-link:hover::before {
+        width: 120%;
+        height: 120%;
+      }
+
+      .nav-link:hover {
+        color: var(--dark);
+        border-color: var(--primary-orange);
+      }
+
+      .nav-link.mystery-trigger {
+        animation: mystery-glow 2s ease infinite;
+      }
+
+      @keyframes mystery-glow {
+        0%,
+        100% {
+          box-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(255, 140, 0, 0.6);
+        }
+      }
+
+      .hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        cursor: pointer;
+      }
+
+      .hamburger span {
+        width: 25px;
+        height: 3px;
+        background: var(--primary-orange);
+        transition: all 0.3s ease;
+      }
+
+      .hero {
+        min-height: 100vh;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          var(--dark-teal) 0%,
+          var(--primary-teal) 50%,
+          rgba(255, 140, 0, 0.2) 100%
+        );
+        overflow: hidden;
+        padding: 80px 0 40px;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background: url('data:image/svg+xml,%3Csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3Cpattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"%3E%3Cpolygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="none" stroke="%23ff8c0010" stroke-width="1"/%3E%3C/pattern%3E%3C/defs%3E%3Crect width="100" height="100" fill="url(%23grid)" /%3E%3C/svg%3E');
+        animation: slide 20s linear infinite;
+      }
+
+      @keyframes slide {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hero-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 40px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-content {
+        animation: fadeInLeft 1.5s ease;
+      }
+
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-bottom: 20px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        animation: subtle-glow 3s ease infinite;
+        font-family: "Crimson Text", serif;
+        font-size: 1.1em;
+        text-transform: uppercase;
+        color: var(--sand);
+        opacity: 0.9;
+        line-height: 1.3;
+        max-width: 100%;
+      }
+
+      @media (max-width: 1400px) {
+        .badge {
+          font-size: 1em;
+          letter-spacing: 1.5px;
+          gap: 6px;
+        }
+      }
+
+      @media (max-width: 1200px) {
+        .badge {
+          font-size: 0.95em;
+          letter-spacing: 1px;
+        }
+      }
+
+      @keyframes subtle-glow {
+        0%,
+        100% {
+          opacity: 0.9;
+        }
+        50% {
+          opacity: 1;
+          text-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+        }
+      }
+
+      .hero-logo-svg {
+        width: 100%;
+        max-width: 618px;
+        height: auto;
+      }
+
+      h1 {
+        font-family: "Zachar", serif;
+        font-size: 5.5em;
+        font-weight: 400;
+        margin-bottom: 20px;
+        background: linear-gradient(
+          45deg,
+          var(--primary-orange),
+          var(--bright-orange),
+          var(--sand)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.1;
+        animation: glow 3s ease-in-out infinite;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      @keyframes glow {
+        0%,
+        100% {
+          filter: brightness(1) drop-shadow(0 0 20px rgba(255, 140, 0, 0.5));
+        }
+        50% {
+          filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 140, 0, 0.8));
+        }
+      }
+
+      .hero-subtitle {
+        font-size: 1.6em;
+        color: var(--sand);
+        margin-bottom: 40px;
+        font-style: italic;
+        opacity: 0.9;
+        font-family: "Crimson Text", serif;
+        font-weight: 400;
+        letter-spacing: 1px;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: nowrap;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 12px 28px;
+        font-size: 0.95em;
+        font-weight: 400;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        font-family: "Crimson Text", serif;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-orange),
+          var(--bright-orange)
+        );
+        color: white;
+        box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(255, 140, 0, 0.5);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--light);
+        border: 2px solid var(--sand);
+      }
+
+      .btn-secondary:hover {
+        background: var(--sand);
+        color: var(--dark);
+        transform: translateY(-3px);
+      }
+
+      .btn-buy {
+        background: linear-gradient(135deg, #1fc7d4, #7a6eaa);
+        color: white;
+        box-shadow: 0 10px 30px rgba(31, 199, 212, 0.3);
+        font-weight: 600;
+      }
+
+      .btn-buy:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(31, 199, 212, 0.5);
+        background: linear-gradient(135deg, #7a6eaa, #1fc7d4);
+      }
+
+      .hero-image {
+        position: relative;
+        animation: fadeInRight 1.5s ease;
+      }
+
+      @keyframes fadeInRight {
+        from {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .character-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .character-bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 140, 0, 0.3) 0%,
+          transparent 70%
+        );
+        animation: pulse-bg 4s ease-in-out infinite;
+      }
+
+      @keyframes pulse-bg {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+      }
+
+      .character-card {
+        position: relative;
+        width: 400px;
+        height: 500px;
+        background: linear-gradient(
+          135deg,
+          rgba(42, 95, 95, 0.3),
+          rgba(255, 140, 0, 0.1)
+        );
+        border: 2px solid var(--primary-orange);
+        border-radius: 20px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 20px 60px rgba(255, 140, 0, 0.3);
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-2deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(2deg);
+        }
+      }
+
+      .character-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 10px 20px rgba(255, 140, 0, 0.5));
+      }
+
+      .particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: var(--primary-orange);
+        border-radius: 50%;
+        animation: particle-float 10s infinite linear;
+      }
+
+      @keyframes particle-float {
+        from {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        to {
+          transform: translateY(-100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      .stats-section {
+        padding: 100px 0;
+        background: rgba(255, 140, 0, 0.05);
+        border-top: 1px solid rgba(255, 140, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 140, 0, 0.3);
+      }
+
+      .stats-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+      }
+
+      .stat-card {
+        text-align: center;
+        padding: 30px;
+        background: linear-gradient(
+          135deg,
+          rgba(42, 95, 95, 0.2),
+          rgba(255, 140, 0, 0.1)
+        );
+        border: 1px solid rgba(255, 140, 0, 0.3);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 140, 0, 0.1) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .stat-card:hover::before {
+        opacity: 1;
+        animation: rotate 20s linear infinite;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(255, 140, 0, 0.3);
+        border-color: var(--primary-orange);
+      }
+
+      .stat-icon {
+        font-size: 2.5em;
+        margin-bottom: 15px;
+        display: block;
+        animation: icon-float 3s ease-in-out infinite;
+      }
+
+      .stat-card:nth-child(odd) .stat-icon {
+        animation-delay: 0s;
+      }
+
+      .stat-card:nth-child(even) .stat-icon {
+        animation-delay: 1.5s;
+      }
+
+      .stat-number {
+        font-family: "Zachar", serif;
+        font-size: 2.8em;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+        line-height: 1;
+      }
+
+      .stat-label {
+        font-size: 1em;
+        color: var(--sand);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-family: "Crimson Text", serif;
+      }
+
+      .features-section {
+        padding: 100px 0;
+        background: var(--dark);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+      }
+
+      .section-title {
+        text-align: center;
+        font-family: "Playfair Display", serif;
+        font-size: 3.5em;
+        font-weight: 700;
+        margin-bottom: 60px;
+        background: linear-gradient(
+          45deg,
+          var(--primary-orange),
+          var(--bright-orange)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+      }
+
+      .feature-card {
+        background: linear-gradient(
+          135deg,
+          rgba(42, 95, 95, 0.3),
+          rgba(255, 140, 0, 0.1)
+        );
+        border: 2px solid rgba(255, 140, 0, 0.3);
+        border-radius: 20px;
+        padding: 40px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 140, 0, 0.1) 0%,
+          transparent 70%
+        );
+        animation: rotate 20s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(255, 140, 0, 0.4);
+        border-color: var(--primary-orange);
+      }
+
+      .feature-icon {
+        font-size: 3em;
+        margin-bottom: 20px;
+        display: inline-block;
+        animation: icon-float 3s ease-in-out infinite;
+      }
+
+      .feature-card:nth-child(2) .feature-icon {
+        animation-delay: 1s;
+      }
+
+      .feature-card:nth-child(3) .feature-icon {
+        animation-delay: 2s;
+      }
+
+      @keyframes icon-float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .feature-title {
+        font-size: 2em;
+        color: var(--bright-orange);
+        margin-bottom: 15px;
+        font-weight: 700;
+        font-family: "Playfair Display", serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .feature-description {
+        color: var(--sand);
+        line-height: 1.8;
+        font-size: 1.15em;
+        font-family: "Crimson Text", serif;
+        letter-spacing: 0.5px;
+      }
+
+      .mystery-portal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: radial-gradient(
+          circle at center,
+          rgba(10, 10, 10, 0.98) 0%,
+          #000 100%
+        );
+        z-index: 100000;
+        display: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      .mystery-portal.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .close-portal {
+        position: fixed;
+        top: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 140, 0, 0.2);
+        border: 2px solid var(--primary-orange);
+        border-radius: 50%;
+        color: var(--primary-orange);
+        font-size: 1.5em;
+        cursor: pointer;
+        z-index: 100001;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .close-portal:hover {
+        background: var(--primary-orange);
+        color: white;
+        transform: rotate(90deg) scale(1.1);
+      }
+
+      .portal-container {
+        position: relative;
+        z-index: 2;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+      }
+
+      .portal-entry {
+        text-align: center;
+        animation: fadeInScale 1s ease;
+      }
+
+      .portal-entry.hidden {
+        display: none;
+      }
+
+      @keyframes fadeInScale {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .portal-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 300px;
+        height: 300px;
+        border: 3px solid var(--primary-orange);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        animation: ring-pulse 3s ease-in-out infinite;
+      }
+
+      .portal-ring:nth-child(2) {
+        width: 400px;
+        height: 400px;
+        animation-delay: 1s;
+        opacity: 0.6;
+      }
+
+      .portal-ring:nth-child(3) {
+        width: 500px;
+        height: 500px;
+        animation-delay: 2s;
+        opacity: 0.3;
+      }
+
+      @keyframes ring-pulse {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 0;
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      .portal-title {
+        font-family: "Playfair Display", serif;
+        font-size: 4.5em;
+        font-weight: 700;
+        background: linear-gradient(
+          45deg,
+          var(--primary-orange),
+          var(--bright-orange),
+          var(--sand)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 50px;
+        position: relative;
+        z-index: 10;
+        animation: title-glow 2s ease infinite;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+      }
+
+      @keyframes title-glow {
+        0%,
+        100% {
+          filter: brightness(1) drop-shadow(0 0 30px rgba(255, 140, 0, 0.5));
+        }
+        50% {
+          filter: brightness(1.5) drop-shadow(0 0 60px rgba(255, 140, 0, 0.8));
+        }
+      }
+
+      .enter-btn {
+        background: transparent;
+        border: 3px solid var(--primary-orange);
+        color: var(--primary-orange);
+        padding: 20px 60px;
+        font-size: 1.6em;
+        font-weight: 400;
+        letter-spacing: 4px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        z-index: 10;
+        font-family: "Crimson Text", serif;
+        text-transform: uppercase;
+      }
+
+      .enter-btn-glow {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--primary-orange),
+          transparent
+        );
+        animation: btn-sweep 3s infinite;
+      }
+
+      @keyframes btn-sweep {
+        0% {
+          left: -100%;
+        }
+        50%,
+        100% {
+          left: 100%;
+        }
+      }
+
+      .enter-btn:hover {
+        background: var(--primary-orange);
+        color: white;
+        transform: scale(1.1);
+        box-shadow: 0 0 50px rgba(255, 140, 0, 0.8);
+      }
+
+      .mystery-journey {
+        display: none;
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .mystery-journey.active {
+        display: block;
+        animation: journeyStart 1s ease;
+      }
+
+      @keyframes journeyStart {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stage-nav {
+        position: fixed;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .stage-dot {
+        width: 15px;
+        height: 15px;
+        border: 2px solid var(--primary-orange);
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .stage-dot.active {
+        background: var(--primary-orange);
+        transform: scale(1.5);
+        box-shadow: 0 0 20px rgba(255, 140, 0, 0.8);
+      }
+
+      .journey-stage {
+        display: none;
+        min-height: 100vh;
+        animation: stageEnter 1s ease;
+      }
+
+      .journey-stage.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @keyframes stageEnter {
+        from {
+          opacity: 0;
+          transform: translateX(100px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .stage-content {
+        text-align: center;
+        padding: 40px;
+      }
+
+      .glitch-title {
+        font-family: "Playfair Display", serif;
+        font-size: 3.5em;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 50px;
+        position: relative;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+      }
+
+      .glitch-title::before,
+      .glitch-title::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .glitch-title::before {
+        color: cyan;
+        animation: glitch-1 0.3s infinite;
+        clip: rect(44px, 450px, 56px, 0);
+      }
+
+      .glitch-title::after {
+        color: magenta;
+        animation: glitch-2 0.3s infinite;
+        clip: rect(20px, 450px, 90px, 0);
+      }
+
+      @keyframes glitch-1 {
+        0%,
+        100% {
+          transform: translate(0);
+        }
+        20% {
+          transform: translate(-2px, 2px);
+        }
+        40% {
+          transform: translate(-2px, -2px);
+        }
+        60% {
+          transform: translate(2px, 2px);
+        }
+        80% {
+          transform: translate(2px, -2px);
+        }
+      }
+
+      @keyframes glitch-2 {
+        0%,
+        100% {
+          transform: translate(0);
+        }
+        20% {
+          transform: translate(2px, -2px);
+        }
+        40% {
+          transform: translate(2px, 2px);
+        }
+        60% {
+          transform: translate(-2px, -2px);
+        }
+        80% {
+          transform: translate(-2px, 2px);
+        }
+      }
+
+      .discovery-box {
+        position: relative;
+        background: rgba(255, 140, 0, 0.05);
+        border: 2px solid var(--primary-orange);
+        border-radius: 20px;
+        padding: 60px;
+        margin-bottom: 40px;
+      }
+
+      .typewriter {
+        font-size: 1.6em;
+        color: var(--sand);
+        margin: 20px 0;
+        overflow: hidden;
+        white-space: nowrap;
+        animation: typing 3s steps(40, end);
+        border-right: 3px solid var(--primary-orange);
+        font-family: "Crimson Text", serif;
+        letter-spacing: 1px;
+      }
+
+      @keyframes typing {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      .discovery-reveal {
+        margin-top: 40px;
+        animation: reveal-pop 1s ease;
+        animation-delay: 5s;
+        animation-fill-mode: both;
+      }
+
+      @keyframes reveal-pop {
+        from {
+          opacity: 0;
+          transform: scale(0);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .reveal-text {
+        font-family: "Orbitron", monospace;
+        font-size: 4em;
+        font-weight: 900;
+        background: linear-gradient(
+          45deg,
+          var(--primary-orange),
+          var(--bright-orange)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: pulse-text 2s ease infinite;
+      }
+
+      @keyframes pulse-text {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
+      .transform-title {
+        font-family: "Orbitron", monospace;
+        font-size: 3em;
+        color: var(--primary-orange);
+        margin-bottom: 50px;
+      }
+
+      .morph-container {
+        position: relative;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 50px;
+      }
+
+      .morph-text {
+        font-family: "Orbitron", monospace;
+        font-size: 5em;
+        font-weight: 900;
+        color: var(--primary-orange);
+        animation: morph 5s ease infinite;
+      }
+
+      @keyframes morph {
+        0%,
+        20% {
+          filter: blur(0);
+        }
+        30%,
+        40% {
+          filter: blur(5px);
+          transform: scale(1.2);
+        }
+        50%,
+        100% {
+          filter: blur(0);
+          transform: scale(1);
+        }
+      }
+
+      .energy-burst {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          var(--primary-orange) 0%,
+          transparent 70%
+        );
+        animation: burst 5s ease infinite;
+        opacity: 0;
+      }
+
+      @keyframes burst {
+        45%,
+        55% {
+          opacity: 0.8;
+          transform: scale(0);
+        }
+        50% {
+          opacity: 0;
+          transform: scale(2);
+        }
+      }
+
+      .emphasis {
+        font-size: 2.2em;
+        color: var(--bright-orange);
+        font-weight: 700;
+        margin-top: 20px;
+        font-family: "Playfair Display", serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .prophecy-title {
+        font-family: "Playfair Display", serif;
+        font-size: 3.5em;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 50px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+      }
+
+      .oracle-container {
+        margin-bottom: 40px;
+      }
+
+      .oracle-eye {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 50px;
+        position: relative;
+      }
+
+      .eye-outer {
+        position: absolute;
+        width: 200px;
+        height: 100px;
+        border: 3px solid var(--primary-orange);
+        border-radius: 50%;
+        top: 50px;
+        animation: blink 4s ease infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        90%,
+        100% {
+          transform: scaleY(1);
+        }
+        95% {
+          transform: scaleY(0.1);
+        }
+      }
+
+      .eye-inner {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: var(--sand);
+        border-radius: 50%;
+        top: 50px;
+        left: 50px;
+        animation: look 3s ease infinite;
+      }
+
+      @keyframes look {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-20px);
+        }
+        75% {
+          transform: translateX(20px);
+        }
+      }
+
+      .eye-pupil {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: var(--dark);
+        border-radius: 50%;
+        top: 80px;
+        left: 80px;
+        animation: look 3s ease infinite;
+      }
+
+      .ancient {
+        font-size: 2em;
+        color: var(--sand);
+        font-style: italic;
+        margin: 15px 0;
+        opacity: 0;
+        animation: fade-in 1s ease forwards;
+        font-family: "Crimson Text", serif;
+        letter-spacing: 1px;
+      }
+
+      .ancient:nth-child(1) {
+        animation-delay: 0.5s;
+      }
+      .ancient:nth-child(2) {
+        animation-delay: 1s;
+      }
+      .ancient:nth-child(3) {
+        animation-delay: 1.5s;
+      }
+      .ancient:nth-child(4) {
+        animation-delay: 2s;
+      }
+
+      @keyframes fade-in {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .numbers-title {
+        font-family: "Playfair Display", serif;
+        font-size: 3.5em;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 50px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+      }
+
+      .stat-box {
+        background: rgba(255, 140, 0, 0.1);
+        border: 2px solid var(--primary-orange);
+        border-radius: 20px;
+        padding: 30px;
+        min-width: 200px;
+        transition: all 0.3s ease;
+      }
+
+      .stat-box:hover {
+        transform: translateY(-10px) scale(1.1);
+        box-shadow: 0 20px 40px rgba(255, 140, 0, 0.5);
+      }
+
+      .stat-value {
+        font-family: "Playfair Display", serif;
+        font-size: 3.5em;
+        font-weight: 700;
+        color: var(--primary-orange);
+        letter-spacing: 2px;
+      }
+
+      .final-title {
+        font-family: "Playfair Display", serif;
+        font-size: 4em;
+        font-weight: 700;
+        background: linear-gradient(
+          45deg,
+          var(--primary-orange),
+          var(--bright-orange),
+          var(--sand)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 50px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+      }
+
+      .urgent {
+        font-size: 1.6em;
+        color: var(--bright-orange);
+        margin-bottom: 20px;
+        animation: urgent-pulse 1s ease infinite;
+        font-family: "Crimson Text", serif;
+        letter-spacing: 1px;
+      }
+
+      @keyframes urgent-pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .ultimate-cta {
+        display: inline-block;
+        padding: 25px 60px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-orange),
+          var(--bright-orange)
+        );
+        color: white;
+        text-decoration: none;
+        font-size: 1.6em;
+        font-weight: 400;
+        letter-spacing: 3px;
+        border-radius: 50px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 40px rgba(255, 140, 0, 0.5);
+        font-family: "Crimson Text", serif;
+        text-transform: uppercase;
+      }
+
+      .ultimate-cta:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 20px 60px rgba(255, 140, 0, 0.8);
+      }
+
+      .cta-pulse {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.3) 0%,
+          transparent 70%
+        );
+        transform: translate(-50%, -50%);
+        animation: cta-pulse-anim 2s ease infinite;
+      }
+
+      @keyframes cta-pulse-anim {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 0;
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.5);
+          opacity: 1;
+        }
+      }
+
+      .next-stage-btn {
+        margin-top: 40px;
+        padding: 15px 40px;
+        background: transparent;
+        border: 2px solid var(--primary-orange);
+        color: var(--primary-orange);
+        font-size: 1.3em;
+        font-weight: 400;
+        letter-spacing: 3px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: "Crimson Text", serif;
+        text-transform: uppercase;
+      }
+
+      .next-stage-btn:hover {
+        background: var(--primary-orange);
+        color: white;
+        transform: translateX(10px);
+      }
+
+      #mysteryCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.5;
+      }
+
+      @keyframes explodeOut {
+        0% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      @keyframes portalExpand {
+        0% {
+          width: 0;
+          height: 0;
+          opacity: 1;
+        }
+        100% {
+          width: 100vw;
+          height: 100vh;
+          opacity: 0;
+        }
+      }
+
+      .contract-section {
+        padding: 80px 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 140, 0, 0.1),
+          rgba(42, 95, 95, 0.2)
+        );
+        text-align: center;
+      }
+
+      .contract-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 40px;
+      }
+
+      .contract-box {
+        background: rgba(10, 10, 10, 0.8);
+        border: 2px solid var(--primary-orange);
+        border-radius: 20px;
+        padding: 40px;
+        margin-top: 30px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .contract-address {
+        font-family: "Space Grotesk", monospace;
+        font-size: 1.2em;
+        color: var(--bright-orange);
+        word-break: break-all;
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255, 140, 0, 0.1);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        letter-spacing: 1px;
+      }
+
+      .contract-address:hover {
+        background: rgba(255, 140, 0, 0.2);
+        transform: scale(1.02);
+      }
+
+      .copy-btn {
+        background: var(--primary-orange);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-size: 1.2em;
+        font-weight: 400;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "Crimson Text", serif;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .copy-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 140, 0, 0.5);
+      }
+
+      footer {
+        padding: 60px 0 40px;
+        background: var(--dark);
+        border-top: 1px solid rgba(255, 140, 0, 0.3);
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+        text-align: center;
+      }
+
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .social-link {
+        width: 50px;
+        height: 50px;
+        border: 2px solid var(--primary-orange);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-orange);
+        text-decoration: none;
+        font-size: 1.5em;
+        transition: all 0.3s ease;
+      }
+
+      .social-link:hover {
+        background: var(--primary-orange);
+        color: white;
+        transform: translateY(-5px) rotate(360deg);
+        box-shadow: 0 10px 30px rgba(255, 140, 0, 0.5);
+      }
+
+      .social-link svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .social-link-buy {
+        background: linear-gradient(135deg, #1fc7d4, #7a6eaa);
+        border-color: #1fc7d4;
+        color: white;
+      }
+
+      .social-link-buy:hover {
+        background: linear-gradient(135deg, #7a6eaa, #1fc7d4);
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 10px 30px rgba(31, 199, 212, 0.6);
+      }
+
+      @media (max-width: 768px) {
+        .loader-logo {
+          width: 150px;
+        }
+
+        .language-selector {
+          gap: 12px;
+        }
+
+        .language-label {
+          margin-bottom: 15px;
+        }
+
+        .header-lang-selector {
+          order: -1;
+        }
+
+        .header-lang-dropdown {
+          right: auto;
+          left: 0;
+        }
+
+        .logo-img {
+          height: 30px;
+        }
+
+        nav {
+          padding: 0 20px;
+        }
+
+        .nav-menu {
+          position: fixed;
+          left: -100%;
+          top: 60px;
+          flex-direction: column;
+          background: rgba(10, 10, 10, 0.98);
+          width: 100%;
+          text-align: center;
+          transition: 0.3s;
+          padding: 20px 0;
+          gap: 15px;
+        }
+
+        .nav-menu.active {
+          left: 0;
+        }
+
+        .nav-link {
+          padding: 8px 20px;
+          font-size: 1em;
+        }
+
+        .hamburger {
+          display: flex;
+        }
+
+        .hero {
+          padding-top: 100px;
+          min-height: auto;
+        }
+
+        .hero-logo-svg {
+          max-width: 100%;
+        }
+
+        h1 {
+          font-size: 2.5em;
+          letter-spacing: 1px;
+          margin-bottom: 15px;
+        }
+
+        .badge {
+          font-size: 0.9em;
+          letter-spacing: 1px;
+          margin-bottom: 15px;
+        }
+
+        .hero-subtitle {
+          font-size: 1.2em;
+          margin-bottom: 30px;
+          padding: 0 10px;
+        }
+
+        .hero-container {
+          grid-template-columns: 1fr;
+          text-align: center;
+          padding: 0 20px;
+          gap: 40px;
+        }
+
+        .hero-content {
+          padding: 0;
+          max-width: 100%;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          gap: 15px;
+          align-items: stretch;
+          padding: 0 10px;
+        }
+
+        .btn {
+          padding: 12px 25px;
+          font-size: 0.95em;
+          width: 100%;
+        }
+
+        .character-card {
+          width: 260px;
+          height: 320px;
+          padding: 15px;
+        }
+
+        .hero-image .character-image {
+          max-width: 230px !important;
+          max-height: 290px !important;
+        }
+
+        .section-title {
+          font-size: 2.5em;
+          margin-bottom: 40px;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .feature-card {
+          padding: 30px 20px;
+        }
+
+        .feature-title {
+          font-size: 1.6em;
+        }
+
+        .feature-description {
+          font-size: 1.05em;
+        }
+
+        .stats-container,
+        .features-container,
+        .contract-container,
+        .footer-container {
+          padding: 0 20px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .stat-card {
+          padding: 25px 20px;
+        }
+
+        .stat-icon {
+          font-size: 2em;
+        }
+
+        .stat-number {
+          font-size: 2em;
+        }
+
+        .stat-label {
+          font-size: 0.9em;
+        }
+
+        .contract-box {
+          padding: 30px 20px;
+        }
+
+        .contract-address {
+          font-size: 0.95em;
+          padding: 15px 10px;
+          word-break: break-all;
+          letter-spacing: 0;
+        }
+
+        .copy-btn {
+          padding: 10px 20px;
+          font-size: 1em;
+        }
+
+        .btn-buy {
+          padding: 10px 20px !important;
+          font-size: 1em !important;
+        }
+
+        .social-links {
+          gap: 20px;
+          flex-wrap: wrap;
+        }
+
+        .social-link {
+          width: 45px;
+          height: 45px;
+        }
+
+        .portal-title {
+          font-size: 2em;
+          letter-spacing: 2px;
+          margin-bottom: 30px;
+        }
+
+        .enter-btn {
+          padding: 15px 40px;
+          font-size: 1.2em;
+          letter-spacing: 2px;
+        }
+
+        .glitch-title {
+          font-size: 1.5em;
+          letter-spacing: 1px;
+          margin-bottom: 30px;
+        }
+
+        .transform-title {
+          font-size: 1.8em;
+          margin-bottom: 30px;
+        }
+
+        .morph-text {
+          font-size: 2.2em;
+        }
+
+        .morph-container {
+          height: 150px;
+          margin-bottom: 30px;
+        }
+
+        .energy-burst {
+          width: 250px;
+          height: 250px;
+        }
+
+        .emphasis {
+          font-size: 1.5em;
+          letter-spacing: 1px;
+        }
+
+        .prophecy-title {
+          font-size: 1.8em;
+          margin-bottom: 30px;
+          letter-spacing: 1px;
+        }
+
+        .oracle-eye {
+          width: 150px;
+          height: 150px;
+          margin: 0 auto 30px;
+        }
+
+        .eye-outer {
+          width: 150px;
+          height: 75px;
+          top: 37px;
+        }
+
+        .eye-inner {
+          width: 75px;
+          height: 75px;
+          top: 37px;
+          left: 37px;
+        }
+
+        .eye-pupil {
+          width: 30px;
+          height: 30px;
+          top: 60px;
+          left: 60px;
+        }
+
+        .numbers-title {
+          font-size: 1.8em;
+          margin-bottom: 30px;
+          letter-spacing: 1px;
+        }
+
+        .final-title {
+          font-size: 2em;
+          margin-bottom: 30px;
+          letter-spacing: 1px;
+        }
+
+        .stage-nav {
+          right: 10px;
+          gap: 15px;
+        }
+
+        .stage-dot {
+          width: 12px;
+          height: 12px;
+        }
+
+        .stage-content {
+          padding: 20px;
+          width: 100%;
+          max-width: 100%;
+        }
+
+        .discovery-box {
+          padding: 25px 15px;
+          margin-bottom: 30px;
+        }
+
+        .typewriter {
+          font-size: 1.1em;
+          white-space: normal;
+          animation: none;
+          border: none;
+        }
+
+        .reveal-text {
+          font-size: 2.2em;
+        }
+
+        .ancient {
+          font-size: 1.2em;
+          line-height: 1.4;
+          margin: 10px 0;
+        }
+
+        .stats-grid {
+          gap: 15px;
+        }
+
+        .stat-box {
+          padding: 20px 15px;
+          min-width: 140px;
+        }
+
+        .stat-value {
+          font-size: 2em;
+        }
+
+        .stat-label {
+          font-size: 1em;
+        }
+
+        .next-stage-btn {
+          padding: 12px 25px;
+          font-size: 1em;
+          letter-spacing: 1px;
+          margin-top: 20px;
+        }
+
+        .ultimate-cta {
+          padding: 15px 30px;
+          font-size: 1.1em;
+          letter-spacing: 1px;
+          width: 90%;
+          max-width: 300px;
+        }
+
+        .mystery-image-container {
+          margin: 20px 0 !important;
+        }
+
+        .mystery-final-image {
+          max-width: 90% !important;
+          width: 100% !important;
+        }
+
+        .urgent {
+          font-size: 1.2em;
+          word-break: break-all;
+        }
+
+        .urgent a {
+          font-size: 0.9em;
+          display: block;
+          margin-top: 5px;
+        }
+
+        .close-portal {
+          width: 40px;
+          height: 40px;
+          top: 20px;
+          right: 20px;
+          font-size: 1.2em;
+        }
+
+        .portal-container {
+          padding: 20px;
+          min-height: 100vh;
+        }
+
+        .journey-stage {
+          min-height: auto;
+          padding: 60px 10px;
+        }
+
+        .transformation-story p {
+          font-size: 1.1em !important;
+        }
+
+        .stats-section,
+        .features-section,
+        .contract-section {
+          padding: 60px 0;
+        }
+
+        footer {
+          padding: 40px 0 30px;
+        }
+
+        .particles {
+          display: none;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero {
+          padding-top: 80px;
+          min-height: auto;
+        }
+
+        .hero-logo-svg {
+          max-width: 100%;
+          padding: 0 10px;
+        }
+
+        h1 {
+          font-size: 2em;
+          margin-bottom: 10px;
+        }
+        .hero-subtitle {
+          font-size: 1.1em;
+          padding: 0 15px;
+        }
+
+        .hero-content {
+          padding: 0 10px;
+        }
+
+        .hero-buttons {
+          padding: 0 5px;
+        }
+
+        .btn {
+          font-size: 0.9em;
+          padding: 10px 20px;
+        }
+
+        .character-card {
+          width: 220px;
+          height: 280px;
+        }
+
+        .hero-image .character-image {
+          max-width: 190px !important;
+          max-height: 250px !important;
+        }
+
+        .section-title {
+          font-size: 2em;
+        }
+
+        .contract-address {
+          font-size: 0.85em;
+        }
+
+        .stats-container .stats-grid:first-of-type,
+        .stats-container .stats-grid:last-of-type {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+
+        .stat-card {
+          padding: 20px 10px;
+        }
+
+        .stat-icon {
+          font-size: 1.8em;
+        }
+
+        .stat-number {
+          font-size: 1.8em;
+        }
+
+        .social-links {
+          gap: 10px;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding: 0 10px;
+        }
+
+        .social-link {
+          width: 38px;
+          height: 38px;
+          flex-shrink: 0;
+        }
+
+        .social-link svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        .portal-title {
+          font-size: 1.6em;
+          margin-bottom: 25px;
+        }
+
+        .enter-btn {
+          padding: 12px 30px;
+          font-size: 1.1em;
+        }
+
+        .glitch-title {
+          font-size: 1.3em;
+          word-wrap: break-word;
+          line-height: 1.3;
+        }
+
+        .transform-title {
+          font-size: 1.5em;
+          word-wrap: break-word;
+          line-height: 1.3;
+        }
+
+        .morph-text {
+          font-size: 1.8em;
+        }
+
+        .prophecy-title {
+          font-size: 1.5em;
+          word-wrap: break-word;
+          line-height: 1.3;
+        }
+
+        .numbers-title {
+          font-size: 1.5em;
+          word-wrap: break-word;
+          line-height: 1.3;
+        }
+
+        .final-title {
+          font-size: 1.6em;
+          word-wrap: break-word;
+          line-height: 1.3;
+        }
+
+        .ancient {
+          font-size: 1.1em;
+        }
+
+        .reveal-text {
+          font-size: 1.8em;
+        }
+
+        .stat-value {
+          font-size: 1.8em;
+        }
+
+        .stat-label {
+          font-size: 0.9em;
+        }
+
+        .emphasis {
+          font-size: 1.3em;
+        }
+
+        .urgent {
+          font-size: 1em;
+        }
+
+        .ultimate-cta {
+          font-size: 1em;
+          padding: 12px 25px;
+        }
+
+        .next-stage-btn {
+          font-size: 0.95em;
+          padding: 10px 20px;
+        }
+
+        .journey-stage {
+          padding: 40px 5px;
+        }
+
+        .stage-content {
+          padding: 15px;
+        }
+
+        .portal-ring:nth-child(1) {
+          width: 200px;
+          height: 200px;
+        }
+
+        .portal-ring:nth-child(2) {
+          width: 250px;
+          height: 250px;
+        }
+
+        .portal-ring:nth-child(3) {
+          width: 300px;
+          height: 300px;
+        }
+
+        .language-selector {
+          gap: 10px;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--primary-orange);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 10000;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader" id="loader">
+      <div class="loader-content">
+        <div class="loader-logo">
+          <svg
+            width="309"
+            height="72"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -5 103 29"
+          >
+            <g transform="translate(-8.0, -8.6) scale(0.0355)">
+              <path
+                fill="#E76A02"
+                d="M265.928 786.736c-1.034.031-2.067.062-3.785-.103-2.195-.094-3.705.007-5.215.112-1.034.03-2.067.059-3.855-.116-4.216-.098-7.678.007-11.14.113-3.325.031-6.651.062-10.811-.108-5.577-.325-10.323-.357-15.059-.599-4.353-.223-8.695-.67-13.041-1.019 103.433-198.22 206.865-396.441 310.556-595.155 1.019 1.943 2.06 3.907 3.082 5.88 57.935 111.854 115.964 223.759 174.022 335.547 43.337 83.445 86.955 166.741 130.441 250.11.46.882.829 1.813.829 3.108-45.036.42-89.662.465-134.288.447-1.787-.001-3.574-.599-5.361-.919 13.286-11.359 26.58-22.703 39.85-34.086 2.13-1.827 4.15-3.781 6.526-5.955-71.618-137.041-143.143-274.012-215.238-411.955-71.985 137.736-143.527 274.621-215.381 412.105 16.388 13.725 32.718 27.401 49.018 41.493-.353.627-.633.84-.913 1.052-2.664.012-5.329.024-8.816-.181-6.278-.098-11.733.009-17.188.119-2.331.029-4.663.059-7.625-.082-1.214-.086-1.797-.002-2.38.083-.718.029-1.435.059-2.855-.108-3.18-.098-5.658.004-8.136.107-.72.03-1.44.06-2.891-.115-5.814-.095-10.935-.001-16.056.095z"
+              />
+              <path
+                fill="#F57506"
+                d="M551.682 691.694c-12.798 24.104-25.402 48.098-38.214 72.075-.707-.915-1.359-1.549-1.764-2.313-20.49-38.665-41.01-77.306-61.707-115.977-1.923-3.605-2.051-6.306-.078-10.003 19.812-37.118 39.407-74.329 59.068-111.55 1.07-2.024 2.182-4.027 3.681-6.79 1.282 2.224 2.292 3.86 3.192 5.554 20.296 38.221 40.548 76.467 60.938 114.637 1.384 2.59 1.165 4.49-.116 6.882-8.392 15.692-16.683 31.438-25.2 47.485m-31.646-23.099c4.527-8.527 9.175-17.007 13.469-25.635.783-1.576.811-4.218.019-5.773-5.59-10.973-11.438-21.816-17.342-32.625-.712-1.304-2.356-3.1-3.374-2.982-1.253.144-2.646 1.87-3.385 3.234-5.87 10.829-11.638 21.714-17.32 32.642-.617 1.187-1.141 3.094-.617 4.099 5.997 11.514 12.11 22.972 18.421 34.318 1.724 3.1 4.318 2.964 6.284-.01 1.369-2.072 2.371-4.386 3.845-7.268z"
+              />
+            </g>
+            <path
+              d="M23.116 18.765c.066.076.14.085.23.076.706-.07 1.607-.299 2.24-.645 1.143-.626 2.174-1.671 2.07-3.49-.105-1.817-1.248-2.58-3.582-3.868l-.724-.402c-1.589-.885-1.87-1.489-1.87-2.253 0-1.166 1.146-1.83 2.413-1.83 1.147 0 1.71.483 1.971.804.383.443.463.966.463 1.127 0 .2.06.301.181.301.14 0 .221-.18.221-.543 0-.959.03-1.48.049-1.78.007-.122.012-.207.012-.271 0-.12-.08-.181-.242-.221-.462-.121-1.367-.282-2.514-.282-2.454 0-4.465 1.348-4.465 3.44 0 1.508.777 2.468 2.869 3.695l1.025.604c1.57.925 2.122 1.4 2.122 2.34 0 1.163-.888 2.292-2.292 2.484-.232.032-.354-.157-.463-.356-.11-.198-.2-.336-.268-.398-.069-.062-.207-.06-.251.046-.045.105.066.283.172.422.08.106.162.24.25.386l.14.228c.043.066.079.128.11.182.052.087.093.157.133.204Zm71.327-.324c.764.342 1.85.442 2.876.442.945 0 2.112-.1 2.957-.704 1.287-.905 1.77-1.93 1.77-3.198 0-1.548-.724-2.856-3.058-4.143l-.724-.402c-1.588-.885-1.87-1.489-1.87-2.253 0-1.166 1.146-1.83 2.413-1.83 1.147 0 1.71.483 1.972.804.382.443.462.966.462 1.127 0 .2.06.301.181.301.141 0 .221-.18.221-.543 0-.959.031-1.48.049-1.78.007-.122.012-.207.012-.271 0-.12-.081-.181-.242-.221-.462-.121-1.367-.282-2.514-.282-2.454 0-4.465 1.348-4.465 3.44 0 1.508.684 2.654 2.776 3.881l1.025.604c1.57.925 1.75 1.669 1.75 2.413 0 1.207-.925 2.172-2.454 2.172-1.106 0-2.433-.422-2.815-1.69-.1-.3-.161-.663-.161-.884 0-.12-.02-.282-.181-.282-.141 0-.221.181-.221.443l-.004.049a33.312 33.312 0 0 0-.097 2.224c0 .382.06.462.342.583Zm-61.405-4.677V6.678l-2.467.06c-1.026.02-1.208.266-1.342.557-.098.213-.184.534-.24.74-.02.077-.036.138-.047.17-.04.141-.08.222-.201.222-.12 0-.161-.1-.161-.282a41.2 41.2 0 0 0-.005-.422c-.01-.64-.026-1.736.005-1.843.04-.221.1-.322.201-.322.058 0 .124.025.212.057.124.046.293.11.552.144.523.06 1.187.08 1.77.08h7.013c.563 0 .945-.04 1.207-.08.148-.02.257-.042.336-.057a.988.988 0 0 1 .146-.023c.121 0 .141.1.141.362 0 .172-.009.548-.018.943v.001c-.011.437-.022.896-.022 1.128-.02.18-.06.281-.16.281-.142 0-.182-.08-.202-.342l-.02-.348c-.04-.443-.503-.966-2.092-.986l-2.233-.04v7.086c0 1.57.02 2.917.101 3.66.06.484.161.806.684.886.241.04.644.06.905.06.201 0 .282.1.282.181 0 .121-.141.181-.342.181-.704 0-1.416-.022-1.98-.04a33.78 33.78 0 0 0-.876-.02c-.174 0-.496.011-.863.024-.486.017-1.05.036-1.45.036-.222 0-.342-.06-.342-.18 0-.081.06-.182.281-.182.262 0 .483-.02.624-.06.362-.08.462-.402.523-.905.08-.724.08-2.072.08-3.64Zm48.011-.573v-2.514c0-.789.002-1.383.003-1.842V8.822c.004-1.042.005-1.389-.023-1.765-.04-.604-.201-.765-.764-.925-.141-.04-.443-.06-.684-.06-.201 0-.302-.061-.302-.182 0-.12.12-.16.382-.16.543 0 1.164.013 1.694.024.394.008.738.016.961.016.2 0 .554-.009.94-.018.467-.01.981-.023 1.333-.023.261 0 .382.04.382.161 0 .12-.1.181-.281.181-.192 0-.293.019-.493.055l-.03.006c-.463.08-.604.321-.644.925-.04.543-.04 1.026-.04 3.62v2.393c0 2.495.336 3.46 1.207 4.202.59.503 1.518.626 2.121.626.765 0 1.502-.222 2.206-.905.986-.926 1.026-2.414 1.026-4.164v-2.152c0-2.537-.02-3.055-.039-3.584l-.001-.036c-.04-.584-.181-.765-.744-.925-.141-.04-.443-.06-.644-.06s-.302-.061-.302-.182c0-.12.121-.16.362-.16.788 0 1.789.03 2.049.038l.063.002c.07 0 .263-.005.513-.012.46-.012 1.115-.029 1.559-.029.241 0 .362.04.362.161 0 .12-.1.181-.302.181-.192 0-.292.019-.493.055l-.03.006c-.483.08-.603.321-.643.925l-.002.036c-.02.53-.039 1.047-.039 3.584v1.83c0 1.911-.2 3.922-1.69 5.15-1.246 1.045-2.354 1.226-3.405 1.226-.904 0-2.653-.183-3.857-1.227-.905-.784-1.71-1.99-1.71-4.465Zm-11.44 4.143c.08-.724.08-2.071.08-3.64v-3.02c0-2.592 0-3.074-.02-3.617-.04-.584-.201-.765-.764-.925-.141-.04-.443-.06-.704-.06-.181 0-.302-.061-.302-.182 0-.12.14-.16.402-.16.57 0 1.215.015 1.711.026.311.008.564.014.703.014.31 0 .884-.011 1.443-.021.531-.01 1.048-.02 1.312-.02 1.127 0 2.414.1 3.36.724.502.342 1.246 1.207 1.246 2.354 0 1.267-.13 2.56-2.232 3.88.819 1.01 2.241 3.3 3.557 5.42 1.204 1.94 2.319 3.735 2.8 4.271.92 1.027 1.525 1.147 1.83 1.208l.028.005.032.007c.181.04.282.04.423.04.14 0 .22.1.22.181 0 .14-.213.181-.434.181h-1.69c-.985 0-1.468-.1-1.93-.342-.477-.238-1.855-2.542-3.192-4.777v-.002c-.809-1.35-1.602-2.676-2.171-3.505-.228-.331-.47-.71-.69-1.052-.274-.427-.51-.797-.634-.942-.1-.1-.188-.161-.309-.161h-1.602c-.08 0-.14.133-.14.234v.241c0 1.589.02 2.916.1 3.64.06.503.141.825.684.906.262.04.644.06.865.06.14 0 .221.1.221.18 0 .122-.14.182-.362.182-.681 0-1.558-.027-2.147-.045-.297-.009-.52-.015-.608-.015-.14 0-.413.01-.735.022-.462.017-1.023.038-1.438.038-.22 0-.341-.06-.341-.181 0-.08.06-.181.281-.181.262 0 .463-.02.624-.06.362-.08.462-.403.523-.905Zm2.333-10.418v5.089c0 .18.04.24.16.301.383.12.906.161 1.348.161.704 0 1.176-.241 1.478-.462.543-.383.916-1.19.916-2.354 0-2.413-1.65-3.037-2.695-3.037-.443 0-.865.02-1.046.06-.121.04-.161.101-.161.242Zm-13.414 3.759c0-2.593 0-3.075-.02-3.618-.04-.584-.2-.765-.764-.926-.14-.04-.443-.06-.704-.06-.181 0-.302-.06-.302-.18 0-.122.141-.162.403-.162.532 0 1.131.014 1.64.025.375.008.7.015.914.015l.851.003c1.344.005 3.714.013 3.976-.003.24-.015.458-.052.611-.078.053-.01.098-.017.133-.022.044-.009.087-.025.129-.04a.476.476 0 0 1 .153-.04c.1 0 .12.08.12.16a.79.79 0 0 1-.024.15c-.032.152-.089.415-.116.957-.007.062-.017.19-.027.34-.021.288-.047.654-.074.786l-.004.015c-.021.088-.064.266-.197.266-.12 0-.14-.08-.14-.22 0-.122-.02-.423-.121-.624-.141-.302-.282-.543-1.167-.624-.302-.04-2.414-.08-2.776-.08-.08 0-.12.06-.12.16v4.317c0 .1.02.181.12.181.403 0 2.696 0 3.098-.04.422-.04.684-.173.844-.354.047-.04.085-.079.118-.111.066-.066.11-.11.164-.11.08 0 .14.08.14.18 0 .049-.008.117-.029.27-.022.167-.058.434-.11.884-.041.342-.081 1.026-.081 1.147 0 .14-.02.382-.181.382-.121 0-.161-.06-.161-.14-.008-.066-.012-.136-.017-.21-.009-.132-.018-.273-.044-.414-.1-.342-.321-.604-.985-.664-.322-.04-2.333-.08-2.776-.08-.08 0-.1.08-.1.18v1.461l-.004.684v.01c-.005.66-.01 1.486.004 1.84.04 1.167.583 1.428 2.393 1.428l.207.002c.606.005 1.843.015 2.25-.162.443-.201.704-.504.825-1.207.04-.181.139-.373.246-.31.119.07.09.218.058.38l-.002.01c-.03.153-.15.619-.302 1.019-.122.317-.214.632-.265.806v.004l-.013.042c-.105.383-.635.374-1.206.365a65.242 65.242 0 0 0-1.747-.007c-.625.003-1.21.006-1.7-.016l-.559-.014h-.003a65.29 65.29 0 0 0-1.49-.026c-.082 0-.194.003-.326.007-.194.006-.43.013-.68.013-.422.02-.864.04-1.226.04-.221 0-.342-.06-.342-.181 0-.08.06-.181.281-.181.262 0 .463-.02.624-.06.362-.081.463-.403.523-.906.08-.724.08-2.071.08-3.64v-3.02Zm-13.038.877h5.923c.04 0 .1-.02.1-.12v-.363c0-2.594-.02-3.47-.04-4.012-.04-.584-.2-.765-.764-.925-.14-.04-.442-.06-.684-.06-.2 0-.301-.061-.301-.182 0-.12.12-.16.382-.16.556 0 1.217.013 1.76.025.381.008.704.015.895.015.186 0 .516-.008.885-.017.47-.011 1.005-.024 1.387-.024.262 0 .383.04.383.161 0 .12-.121.181-.322.181-.14 0-.302.02-.523.06-.463.081-.603.322-.644.926-.04.543-.04 1.026-.04 3.62v3.017c0 1.569 0 2.916.08 3.66.06.483.161.805.705.886.24.04.623.06.905.06.18 0 .281.1.281.18 0 .122-.14.182-.362.182-.695 0-1.397-.022-1.95-.04-.36-.011-.656-.02-.846-.02-.174 0-.508.011-.885.024h-.001c-.492.017-1.06.036-1.447.036-.241 0-.382-.06-.382-.181 0-.08.08-.181.282-.181.281 0 .482-.02.643-.06.362-.08.463-.403.523-.905.08-.725.08-2.032.08-3.6v-1.308c0-.06-.06-.1-.1-.1H45.49c-.06 0-.12.02-.12.1v1.307c0 1.57.02 2.876.1 3.62.06.483.16.805.684.886.241.04.643.06.905.06.2 0 .281.1.281.18 0 .122-.14.182-.362.182-.69 0-1.408-.022-1.98-.04h-.001c-.38-.01-.695-.02-.895-.02-.173 0-.488.01-.846.023-.475.017-1.026.037-1.427.037-.22 0-.342-.06-.342-.181 0-.08.06-.181.282-.181.262 0 .463-.02.623-.06.362-.08.463-.403.523-.905.08-.725.08-2.072.08-3.64v-3.018c0-2.594 0-3.077-.02-3.62-.04-.584-.2-.765-.764-.925-.14-.04-.442-.06-.703-.06-.181 0-.302-.061-.302-.182 0-.12.14-.16.382-.16.551 0 1.178.013 1.7.024.373.009.693.016.895.016.184 0 .522-.008.902-.017.491-.01 1.054-.024 1.45-.024.242 0 .363.04.363.161 0 .12-.1.181-.322.181-.14 0-.302.02-.503.06-.483.081-.623.322-.664.926-.04.543-.04 1.418-.04 4.012v.362c0 .1.06.121.12.121Z"
+              fill="url(#gradient2)"
+            />
+            <defs>
+              <linearGradient
+                id="gradient1"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  style="stop-color: #ff9500; stop-opacity: 1"
+                />
+                <stop
+                  offset="50%"
+                  style="stop-color: #ff9500; stop-opacity: 1"
+                />
+                <stop
+                  offset="100%"
+                  style="stop-color: #ff9500; stop-opacity: 1"
+                />
+              </linearGradient>
+              <linearGradient
+                id="gradient2"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  style="stop-color: #ffffff; stop-opacity: 1"
+                />
+                <stop
+                  offset="50%"
+                  style="stop-color: #ffffff; stop-opacity: 1"
+                />
+                <stop
+                  offset="100%"
+                  style="stop-color: #ffffff; stop-opacity: 1"
+                />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="language-label" id="langLabel">SELECT LANGUAGE</span>
+        <div class="language-selector" id="languageSelector">
+          <button
+            class="lang-btn active"
+            onclick="setLanguage('en')"
+            title="English"
+          >
+            <img
+              src="https://flagcdn.com/48x36/us.png"
+              srcset="
+                https://flagcdn.com/96x72/us.png   2x,
+                https://flagcdn.com/144x108/us.png 3x
+              "
+              class="flag-icon"
+              alt="English"
+            />
+          </button>
+          <button class="lang-btn" onclick="setLanguage('zh')" title="中文">
+            <img
+              src="https://flagcdn.com/48x36/cn.png"
+              srcset="
+                https://flagcdn.com/96x72/cn.png   2x,
+                https://flagcdn.com/144x108/cn.png 3x
+              "
+              class="flag-icon"
+              alt="中文"
+            />
+          </button>
+          <button class="lang-btn" onclick="setLanguage('ar')" title="العربية">
+            <img
+              src="https://flagcdn.com/48x36/ae.png"
+              srcset="
+                https://flagcdn.com/96x72/ae.png   2x,
+                https://flagcdn.com/144x108/ae.png 3x
+              "
+              class="flag-icon"
+              alt="العربية"
+            />
+          </button>
+          <button class="lang-btn" onclick="setLanguage('tr')" title="Türkçe">
+            <img
+              src="https://flagcdn.com/48x36/tr.png"
+              srcset="
+                https://flagcdn.com/96x72/tr.png   2x,
+                https://flagcdn.com/144x108/tr.png 3x
+              "
+              class="flag-icon"
+              alt="Türkçe"
+            />
+          </button>
+          <button class="lang-btn" onclick="setLanguage('de')" title="Deutsch">
+            <img
+              src="https://flagcdn.com/48x36/de.png"
+              srcset="
+                https://flagcdn.com/96x72/de.png   2x,
+                https://flagcdn.com/144x108/de.png 3x
+              "
+              class="flag-icon"
+              alt="Deutsch"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <div class="mystery-portal" id="mysteryPortal">
+      <button class="close-portal" onclick="closeMysteryPortal()">✕</button>
+
+      <div class="portal-container">
+        <div class="portal-entry" id="portalEntry">
+          <div class="portal-ring"></div>
+          <div class="portal-ring"></div>
+          <div class="portal-ring"></div>
+          <h2 class="portal-title" data-key="mysteryTitle">
+            ENTER THE MYSTERY
+          </h2>
+          <button class="enter-btn" onclick="enterMystery()">
+            <span data-key="revealTruth">REVEAL THE TRUTH</span>
+            <div class="enter-btn-glow"></div>
+          </button>
+        </div>
+
+        <div class="mystery-journey" id="mysteryJourney">
+          <div class="stage-nav">
+            <div class="stage-dot active" data-stage="1"></div>
+            <div class="stage-dot" data-stage="2"></div>
+            <div class="stage-dot" data-stage="3"></div>
+            <div class="stage-dot" data-stage="4"></div>
+            <div class="stage-dot" data-stage="5"></div>
+          </div>
+
+          <div class="journey-stage active" id="stage1">
+            <div class="stage-content">
+              <h3
+                class="glitch-title"
+                data-text="YEAR 2025: THE DISCOVERY"
+                data-key="stage1Title"
+              >
+                YEAR 2025: THE DISCOVERY
+              </h3>
+              <div class="discovery-box">
+                <div class="discovery-text">
+                  <p class="typewriter" data-key="stage1Text1">
+                    A hidden smart contract was found...
+                  </p>
+                  <p
+                    class="typewriter"
+                    style="animation-delay: 2s"
+                    data-key="stage1Text2"
+                  >
+                    Deep in the blockchain archives...
+                  </p>
+                  <p
+                    class="typewriter"
+                    style="animation-delay: 4s"
+                    data-key="stage1Text3"
+                  >
+                    The original name was revealed...
+                  </p>
+                </div>
+                <div class="discovery-reveal" style="display: none">
+                  <div class="reveal-text">$ASTHERUS</div>
+                </div>
+              </div>
+              <button
+                class="next-stage-btn"
+                onclick="nextStage()"
+                data-key="continueBtn"
+              >
+                CONTINUE →
+              </button>
+            </div>
+          </div>
+
+          <div class="journey-stage" id="stage2">
+            <div class="stage-content">
+              <h3 class="transform-title" data-key="stage2Title">
+                THE TRANSFORMATION
+              </h3>
+              <div class="morph-container">
+                <div class="morph-text" id="morphText">$ASTER</div>
+                <div class="energy-burst"></div>
+              </div>
+              <div class="transformation-story">
+                <p
+                  style="color: var(--sand); font-size: 1.4em"
+                  data-key="stage2Text1"
+                >
+                  What was known as $ASTER was always meant to be...
+                </p>
+                <p class="emphasis" data-key="stage2Text2">
+                  $ASTHERUS - The Original Vision
+                </p>
+              </div>
+              <button
+                class="next-stage-btn"
+                onclick="nextStage()"
+                data-key="witnessMoreBtn"
+              >
+                WITNESS MORE →
+              </button>
+            </div>
+          </div>
+
+          <div class="journey-stage" id="stage3">
+            <div class="stage-content">
+              <h3 class="prophecy-title" data-key="stage3Title">
+                THE ANCIENT PROPHECY
+              </h3>
+              <div class="oracle-container">
+                <div class="oracle-eye">
+                  <div class="eye-outer"></div>
+                  <div class="eye-inner"></div>
+                  <div class="eye-pupil"></div>
+                </div>
+                <div class="prophecy-text">
+                  <p class="ancient" data-key="prophecy1">
+                    When the desert sun meets the digital moon
+                  </p>
+                  <p class="ancient" data-key="prophecy2">
+                    ASTHERUS shall rise beyond the dune
+                  </p>
+                  <p class="ancient" data-key="prophecy3">
+                    Those who believe in the original name
+                  </p>
+                  <p class="ancient" data-key="prophecy4">
+                    Shall witness wealth and eternal fame
+                  </p>
+                </div>
+              </div>
+              <button
+                class="next-stage-btn"
+                onclick="nextStage()"
+                data-key="numbersBtn"
+              >
+                THE NUMBERS →
+              </button>
+            </div>
+          </div>
+
+          <div class="journey-stage" id="stage4">
+            <div class="stage-content">
+              <h3 class="numbers-title" data-key="stage4Title">
+                THE INEVITABLE FUTURE
+              </h3>
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <div class="stat-value" data-value="1000">0</div>
+                  <div class="stat-label" data-key="xPotential">
+                    X POTENTIAL
+                  </div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-value" data-value="100">0</div>
+                  <div class="stat-label" data-key="millionMc">MILLION MC</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-value" data-value="100000">0</div>
+                  <div class="stat-label" data-key="holdersSoon">
+                    HOLDERS SOON
+                  </div>
+                </div>
+              </div>
+              <button
+                class="next-stage-btn"
+                onclick="nextStage()"
+                data-key="finalBtn"
+              >
+                FINAL REVELATION →
+              </button>
+            </div>
+          </div>
+
+          <div class="journey-stage" id="stage5">
+            <div class="stage-content">
+              <h3 class="final-title" data-key="stage5Title">
+                THE ORIGINAL NAME REVEALED!
+              </h3>
+
+              <div class="mystery-image-container" style="margin: 40px 0">
+                <img
+                  src="images/mystery-final.png"
+                  alt="ASTHERUS Mystery"
+                  class="mystery-final-image"
+                  style="
+                    max-width: 600px;
+                    width: 100%;
+                    height: auto;
+                    border-radius: 20px;
+                    box-shadow: 0 20px 60px rgba(255, 140, 0, 0.4);
+                  "
+                />
+              </div>
+
+              <div class="final-message">
+                <p class="urgent" data-key="siteLink">
+                  🔥 www.astherus.com (webarchive) 🔥
+                </p>
+              </div>
+              <div class="final-actions">
+                <a
+                  href="https://t.me/ASTHERUSCTO"
+                  class="ultimate-cta"
+                  target="_blank"
+                  data-key="joinRevolution"
+                >
+                  JOIN THE REVOLUTION NOW
+                  <span class="cta-pulse"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <canvas id="mysteryCanvas"></canvas>
+    </div>
+
+    <header id="header">
+      <nav>
+        <a href="#" class="logo">
+          <div class="logo-img">
+            <svg
+              width="103"
+              height="24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -5 103 29"
+            >
+              <g transform="translate(-8.0, -8.6) scale(0.0355)">
+                <path
+                  fill="#E76A02"
+                  d="M265.928 786.736c-1.034.031-2.067.062-3.785-.103-2.195-.094-3.705.007-5.215.112-1.034.03-2.067.059-3.855-.116-4.216-.098-7.678.007-11.14.113-3.325.031-6.651.062-10.811-.108-5.577-.325-10.323-.357-15.059-.599-4.353-.223-8.695-.67-13.041-1.019 103.433-198.22 206.865-396.441 310.556-595.155 1.019 1.943 2.06 3.907 3.082 5.88 57.935 111.854 115.964 223.759 174.022 335.547 43.337 83.445 86.955 166.741 130.441 250.11.46.882.829 1.813.829 3.108-45.036.42-89.662.465-134.288.447-1.787-.001-3.574-.599-5.361-.919 13.286-11.359 26.58-22.703 39.85-34.086 2.13-1.827 4.15-3.781 6.526-5.955-71.618-137.041-143.143-274.012-215.238-411.955-71.985 137.736-143.527 274.621-215.381 412.105 16.388 13.725 32.718 27.401 49.018 41.493-.353.627-.633.84-.913 1.052-2.664.012-5.329.024-8.816-.181-6.278-.098-11.733.009-17.188.119-2.331.029-4.663.059-7.625-.082-1.214-.086-1.797-.002-2.38.083-.718.029-1.435.059-2.855-.108-3.18-.098-5.658.004-8.136.107-.72.03-1.44.06-2.891-.115-5.814-.095-10.935-.001-16.056.095z"
+                />
+                <path
+                  fill="#F57506"
+                  d="M551.682 691.694c-12.798 24.104-25.402 48.098-38.214 72.075-.707-.915-1.359-1.549-1.764-2.313-20.49-38.665-41.01-77.306-61.707-115.977-1.923-3.605-2.051-6.306-.078-10.003 19.812-37.118 39.407-74.329 59.068-111.55 1.07-2.024 2.182-4.027 3.681-6.79 1.282 2.224 2.292 3.86 3.192 5.554 20.296 38.221 40.548 76.467 60.938 114.637 1.384 2.59 1.165 4.49-.116 6.882-8.392 15.692-16.683 31.438-25.2 47.485m-31.646-23.099c4.527-8.527 9.175-17.007 13.469-25.635.783-1.576.811-4.218.019-5.773-5.59-10.973-11.438-21.816-17.342-32.625-.712-1.304-2.356-3.1-3.374-2.982-1.253.144-2.646 1.87-3.385 3.234-5.87 10.829-11.638 21.714-17.32 32.642-.617 1.187-1.141 3.094-.617 4.099 5.997 11.514 12.11 22.972 18.421 34.318 1.724 3.1 4.318 2.964 6.284-.01 1.369-2.072 2.371-4.386 3.845-7.268z"
+                />
+              </g>
+              <path
+                d="M23.116 18.765c.066.076.14.085.23.076.706-.07 1.607-.299 2.24-.645 1.143-.626 2.174-1.671 2.07-3.49-.105-1.817-1.248-2.58-3.582-3.868l-.724-.402c-1.589-.885-1.87-1.489-1.87-2.253 0-1.166 1.146-1.83 2.413-1.83 1.147 0 1.71.483 1.971.804.383.443.463.966.463 1.127 0 .2.06.301.181.301.14 0 .221-.18.221-.543 0-.959.03-1.48.049-1.78.007-.122.012-.207.012-.271 0-.12-.08-.181-.242-.221-.462-.121-1.367-.282-2.514-.282-2.454 0-4.465 1.348-4.465 3.44 0 1.508.777 2.468 2.869 3.695l1.025.604c1.57.925 2.122 1.4 2.122 2.34 0 1.163-.888 2.292-2.292 2.484-.232.032-.354-.157-.463-.356-.11-.198-.2-.336-.268-.398-.069-.062-.207-.06-.251.046-.045.105.066.283.172.422.08.106.162.24.25.386l.14.228c.043.066.079.128.11.182.052.087.093.157.133.204Zm71.327-.324c.764.342 1.85.442 2.876.442.945 0 2.112-.1 2.957-.704 1.287-.905 1.77-1.93 1.77-3.198 0-1.548-.724-2.856-3.058-4.143l-.724-.402c-1.588-.885-1.87-1.489-1.87-2.253 0-1.166 1.146-1.83 2.413-1.83 1.147 0 1.71.483 1.972.804.382.443.462.966.462 1.127 0 .2.06.301.181.301.141 0 .221-.18.221-.543 0-.959.031-1.48.049-1.78.007-.122.012-.207.012-.271 0-.12-.081-.181-.242-.221-.462-.121-1.367-.282-2.514-.282-2.454 0-4.465 1.348-4.465 3.44 0 1.508.684 2.654 2.776 3.881l1.025.604c1.57.925 1.75 1.669 1.75 2.413 0 1.207-.925 2.172-2.454 2.172-1.106 0-2.433-.422-2.815-1.69-.1-.3-.161-.663-.161-.884 0-.12-.02-.282-.181-.282-.141 0-.221.181-.221.443l-.004.049a33.312 33.312 0 0 0-.097 2.224c0 .382.06.462.342.583Zm-61.405-4.677V6.678l-2.467.06c-1.026.02-1.208.266-1.342.557-.098.213-.184.534-.24.74-.02.077-.036.138-.047.17-.04.141-.08.222-.201.222-.12 0-.161-.1-.161-.282a41.2 41.2 0 0 0-.005-.422c-.01-.64-.026-1.736.005-1.843.04-.221.1-.322.201-.322.058 0 .124.025.212.057.124.046.293.11.552.144.523.06 1.187.08 1.77.08h7.013c.563 0 .945-.04 1.207-.08.148-.02.257-.042.336-.057a.988.988 0 0 1 .146-.023c.121 0 .141.1.141.362 0 .172-.009.548-.018.943v.001c-.011.437-.022.896-.022 1.128-.02.18-.06.281-.16.281-.142 0-.182-.08-.202-.342l-.02-.348c-.04-.443-.503-.966-2.092-.986l-2.233-.04v7.086c0 1.57.02 2.917.101 3.66.06.484.161.806.684.886.241.04.644.06.905.06.201 0 .282.1.282.181 0 .121-.141.181-.342.181-.704 0-1.416-.022-1.98-.04a33.78 33.78 0 0 0-.876-.02c-.174 0-.496.011-.863.024-.486.017-1.05.036-1.45.036-.222 0-.342-.06-.342-.18 0-.081.06-.182.281-.182.262 0 .483-.02.624-.06.362-.08.462-.402.523-.905.08-.724.08-2.072.08-3.64Zm48.011-.573v-2.514c0-.789.002-1.383.003-1.842V8.822c.004-1.042.005-1.389-.023-1.765-.04-.604-.201-.765-.764-.925-.141-.04-.443-.06-.684-.06-.201 0-.302-.061-.302-.182 0-.12.12-.16.382-.16.543 0 1.164.013 1.694.024.394.008.738.016.961.016.2 0 .554-.009.94-.018.467-.01.981-.023 1.333-.023.261 0 .382.04.382.161 0 .12-.1.181-.281.181-.192 0-.293.019-.493.055l-.03.006c-.463.08-.604.321-.644.925-.04.543-.04 1.026-.04 3.62v2.393c0 2.495.336 3.46 1.207 4.202.59.503 1.518.626 2.121.626.765 0 1.502-.222 2.206-.905.986-.926 1.026-2.414 1.026-4.164v-2.152c0-2.537-.02-3.055-.039-3.584l-.001-.036c-.04-.584-.181-.765-.744-.925-.141-.04-.443-.06-.644-.06s-.302-.061-.302-.182c0-.12.121-.16.362-.16.788 0 1.789.03 2.049.038l.063.002c.07 0 .263-.005.513-.012.46-.012 1.115-.029 1.559-.029.241 0 .362.04.362.161 0 .12-.1.181-.302.181-.192 0-.292.019-.493.055l-.03.006c-.483.08-.603.321-.643.925l-.002.036c-.02.53-.039 1.047-.039 3.584v1.83c0 1.911-.2 3.922-1.69 5.15-1.246 1.045-2.354 1.226-3.405 1.226-.904 0-2.653-.183-3.857-1.227-.905-.784-1.71-1.99-1.71-4.465Zm-11.44 4.143c.08-.724.08-2.071.08-3.64v-3.02c0-2.592 0-3.074-.02-3.617-.04-.584-.201-.765-.764-.925-.141-.04-.443-.06-.704-.06-.181 0-.302-.061-.302-.182 0-.12.14-.16.402-.16.57 0 1.215.015 1.711.026.311.008.564.014.703.014.31 0 .884-.011 1.443-.021.531-.01 1.048-.02 1.312-.02 1.127 0 2.414.1 3.36.724.502.342 1.246 1.207 1.246 2.354 0 1.267-.13 2.56-2.232 3.88.819 1.01 2.241 3.3 3.557 5.42 1.204 1.94 2.319 3.735 2.8 4.271.92 1.027 1.525 1.147 1.83 1.208l.028.005.032.007c.181.04.282.04.423.04.14 0 .22.1.22.181 0 .14-.213.181-.434.181h-1.69c-.985 0-1.468-.1-1.93-.342-.477-.238-1.855-2.542-3.192-4.777v-.002c-.809-1.35-1.602-2.676-2.171-3.505-.228-.331-.47-.71-.69-1.052-.274-.427-.51-.797-.634-.942-.1-.1-.188-.161-.309-.161h-1.602c-.08 0-.14.133-.14.234v.241c0 1.589.02 2.916.1 3.64.06.503.141.825.684.906.262.04.644.06.865.06.14 0 .221.1.221.18 0 .122-.14.182-.362.182-.681 0-1.558-.027-2.147-.045-.297-.009-.52-.015-.608-.015-.14 0-.413.01-.735.022-.462.017-1.023.038-1.438.038-.22 0-.341-.06-.341-.181 0-.08.06-.181.281-.181.262 0 .463-.02.624-.06.362-.08.462-.403.523-.905Zm2.333-10.418v5.089c0 .18.04.24.16.301.383.12.906.161 1.348.161.704 0 1.176-.241 1.478-.462.543-.383.916-1.19.916-2.354 0-2.413-1.65-3.037-2.695-3.037-.443 0-.865.02-1.046.06-.121.04-.161.101-.161.242Zm-13.414 3.759c0-2.593 0-3.075-.02-3.618-.04-.584-.2-.765-.764-.926-.14-.04-.443-.06-.704-.06-.181 0-.302-.06-.302-.18 0-.122.141-.162.403-.162.532 0 1.131.014 1.64.025.375.008.7.015.914.015l.851.003c1.344.005 3.714.013 3.976-.003.24-.015.458-.052.611-.078.053-.01.098-.017.133-.022.044-.009.087-.025.129-.04a.476.476 0 0 1 .153-.04c.1 0 .12.08.12.16a.79.79 0 0 1-.024.15c-.032.152-.089.415-.116.957-.007.062-.017.19-.027.34-.021.288-.047.654-.074.786l-.004.015c-.021.088-.064.266-.197.266-.12 0-.14-.08-.14-.22 0-.122-.02-.423-.121-.624-.141-.302-.282-.543-1.167-.624-.302-.04-2.414-.08-2.776-.08-.08 0-.12.06-.12.16v4.317c0 .1.02.181.12.181.403 0 2.696 0 3.098-.04.422-.04.684-.173.844-.354.047-.04.085-.079.118-.111.066-.066.11-.11.164-.11.08 0 .14.08.14.18 0 .049-.008.117-.029.27-.022.167-.058.434-.11.884-.041.342-.081 1.026-.081 1.147 0 .14-.02.382-.181.382-.121 0-.161-.06-.161-.14-.008-.066-.012-.136-.017-.21-.009-.132-.018-.273-.044-.414-.1-.342-.321-.604-.985-.664-.322-.04-2.333-.08-2.776-.08-.08 0-.1.08-.1.18v1.461l-.004.684v.01c-.005.66-.01 1.486.004 1.84.04 1.167.583 1.428 2.393 1.428l.207.002c.606.005 1.843.015 2.25-.162.443-.201.704-.504.825-1.207.04-.181.139-.373.246-.31.119.07.09.218.058.38l-.002.01c-.03.153-.15.619-.302 1.019-.122.317-.214.632-.265.806v.004l-.013.042c-.105.383-.635.374-1.206.365a65.242 65.242 0 0 0-1.747-.007c-.625.003-1.21.006-1.7-.016l-.559-.014h-.003a65.29 65.29 0 0 0-1.49-.026c-.082 0-.194.003-.326.007-.194.006-.43.013-.68.013-.422.02-.864.04-1.226.04-.221 0-.342-.06-.342-.181 0-.08.06-.181.281-.181.262 0 .463-.02.624-.06.362-.081.463-.403.523-.906.08-.724.08-2.071.08-3.64v-3.02Zm-13.038.877h5.923c.04 0 .1-.02.1-.12v-.363c0-2.594-.02-3.47-.04-4.012-.04-.584-.2-.765-.764-.925-.14-.04-.442-.06-.684-.06-.2 0-.301-.061-.301-.182 0-.12.12-.16.382-.16.556 0 1.217.013 1.76.025.381.008.704.015.895.015.186 0 .516-.008.885-.017.47-.011 1.005-.024 1.387-.024.262 0 .383.04.383.161 0 .12-.121.181-.322.181-.14 0-.302.02-.523.06-.463.081-.603.322-.644.926-.04.543-.04 1.026-.04 3.62v3.017c0 1.569 0 2.916.08 3.66.06.483.161.805.705.886.24.04.623.06.905.06.18 0 .281.1.281.18 0 .122-.14.182-.362.182-.695 0-1.397-.022-1.95-.04-.36-.011-.656-.02-.846-.02-.174 0-.508.011-.885.024h-.001c-.492.017-1.06.036-1.447.036-.241 0-.382-.06-.382-.181 0-.08.08-.181.282-.181.281 0 .482-.02.643-.06.362-.08.463-.403.523-.905.08-.725.08-2.032.08-3.6v-1.308c0-.06-.06-.1-.1-.1H45.49c-.06 0-.12.02-.12.1v1.307c0 1.57.02 2.876.1 3.62.06.483.16.805.684.886.241.04.643.06.905.06.2 0 .281.1.281.18 0 .122-.14.182-.362.182-.69 0-1.408-.022-1.98-.04h-.001c-.38-.01-.695-.02-.895-.02-.173 0-.488.01-.846.023-.475.017-1.026.037-1.427.037-.22 0-.342-.06-.342-.181 0-.08.06-.181.282-.181.262 0 .463-.02.623-.06.362-.08.463-.403.523-.905.08-.725.08-2.072.08-3.64v-3.018c0-2.594 0-3.077-.02-3.62-.04-.584-.2-.765-.764-.925-.14-.04-.442-.06-.703-.06-.181 0-.302-.061-.302-.182 0-.12.14-.16.382-.16.551 0 1.178.013 1.7.024.373.009.693.016.895.016.184 0 .522-.008.902-.017.491-.01 1.054-.024 1.45-.024.242 0 .363.04.363.161 0 .12-.1.181-.322.181-.14 0-.302.02-.503.06-.483.081-.623.322-.664.926-.04.543-.04 1.418-.04 4.012v.362c0 .1.06.121.12.121Z"
+                fill="url(#gradient2)"
+              />
+              <defs>
+                <linearGradient
+                  id="gradient1"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: #ff9500; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="50%"
+                    style="stop-color: #ff9500; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #ff9500; stop-opacity: 1"
+                  />
+                </linearGradient>
+                <linearGradient
+                  id="gradient2"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: #ffffff; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="50%"
+                    style="stop-color: #ffffff; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #ffffff; stop-opacity: 1"
+                  />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </a>
+
+        <ul class="nav-menu" id="navMenu">
+          <li>
+            <a href="#about" class="nav-link" data-key="navAbout">ABOUT</a>
+          </li>
+          <li>
+            <a href="#tokenomics" class="nav-link" data-key="navTokenomics"
+              >TOKENOMICS</a
+            >
+          </li>
+          <li>
+            <a
+              href="javascript:void(0);"
+              onclick="openMysteryPortal(); return false;"
+              class="nav-link mystery-trigger"
+              data-key="navMystery"
+              >MYSTERY</a
+            >
+          </li>
+          <li>
+            <a href="#contract" class="nav-link" data-key="navContract"
+              >CONTRACT</a
+            >
+          </li>
+          <li>
+            <a href="#links" class="nav-link" data-key="navLinks">LINKS</a>
+          </li>
+          <li>
+            <a
+              href="https://pancakeswap.finance/swap?outputCurrency=0xcomingsoon"
+              class="nav-link"
+              target="_blank"
+              data-key="navBuy"
+              >BUY</a
+            >
+          </li>
+          <li class="header-lang-selector">
+            <div
+              class="header-lang-current"
+              id="headerLangCurrent"
+              onclick="toggleHeaderLangDropdown()"
+            >
+              <img
+                id="currentLangFlag"
+                src="https://flagcdn.com/48x36/us.png"
+                srcset="https://flagcdn.com/96x72/us.png 2x"
+                class="flag-icon"
+                alt="Language"
+              />
+            </div>
+            <div class="header-lang-dropdown" id="headerLangDropdown">
+              <div
+                class="header-lang-option"
+                onclick="changeHeaderLanguage('en')"
+              >
+                <img
+                  src="https://flagcdn.com/48x36/us.png"
+                  srcset="https://flagcdn.com/96x72/us.png 2x"
+                  class="flag-icon"
+                  alt="English"
+                />
+              </div>
+              <div
+                class="header-lang-option"
+                onclick="changeHeaderLanguage('zh')"
+              >
+                <img
+                  src="https://flagcdn.com/48x36/cn.png"
+                  srcset="https://flagcdn.com/96x72/cn.png 2x"
+                  class="flag-icon"
+                  alt="中文"
+                />
+              </div>
+              <div
+                class="header-lang-option"
+                onclick="changeHeaderLanguage('ar')"
+              >
+                <img
+                  src="https://flagcdn.com/48x36/ae.png"
+                  srcset="https://flagcdn.com/96x72/ae.png 2x"
+                  class="flag-icon"
+                  alt="العربية"
+                />
+              </div>
+              <div
+                class="header-lang-option"
+                onclick="changeHeaderLanguage('tr')"
+              >
+                <img
+                  src="https://flagcdn.com/48x36/tr.png"
+                  srcset="https://flagcdn.com/96x72/tr.png 2x"
+                  class="flag-icon"
+                  alt="Türkçe"
+                />
+              </div>
+              <div
+                class="header-lang-option"
+                onclick="changeHeaderLanguage('de')"
+              >
+                <img
+                  src="https://flagcdn.com/48x36/de.png"
+                  srcset="https://flagcdn.com/96x72/de.png 2x"
+                  class="flag-icon"
+                  alt="Deutsch"
+                />
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s"></div>
+        <div class="particle" style="left: 20%; animation-delay: 2s"></div>
+        <div class="particle" style="left: 30%; animation-delay: 4s"></div>
+        <div class="particle" style="left: 40%; animation-delay: 6s"></div>
+        <div class="particle" style="left: 50%; animation-delay: 8s"></div>
+        <div class="particle" style="left: 60%; animation-delay: 10s"></div>
+        <div class="particle" style="left: 70%; animation-delay: 12s"></div>
+        <div class="particle" style="left: 80%; animation-delay: 14s"></div>
+        <div class="particle" style="left: 90%; animation-delay: 16s"></div>
+      </div>
+
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="badge" data-key="badgeText">
+            🎩 THE ORIGINAL NAME REVEALED
+          </div>
+
+          <h1>
+            <svg
+              class="hero-logo-svg"
+              width="618"
+              height="144"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -5 103 29"
+            >
+              <g transform="translate(-8.0, -8.6) scale(0.0355)">
+                <path
+                  fill="#E76A02"
+                  d="M265.928 786.736c-1.034.031-2.067.062-3.785-.103-2.195-.094-3.705.007-5.215.112-1.034.03-2.067.059-3.855-.116-4.216-.098-7.678.007-11.14.113-3.325.031-6.651.062-10.811-.108-5.577-.325-10.323-.357-15.059-.599-4.353-.223-8.695-.67-13.041-1.019 103.433-198.22 206.865-396.441 310.556-595.155 1.019 1.943 2.06 3.907 3.082 5.88 57.935 111.854 115.964 223.759 174.022 335.547 43.337 83.445 86.955 166.741 130.441 250.11.46.882.829 1.813.829 3.108-45.036.42-89.662.465-134.288.447-1.787-.001-3.574-.599-5.361-.919 13.286-11.359 26.58-22.703 39.85-34.086 2.13-1.827 4.15-3.781 6.526-5.955-71.618-137.041-143.143-274.012-215.238-411.955-71.985 137.736-143.527 274.621-215.381 412.105 16.388 13.725 32.718 27.401 49.018 41.493-.353.627-.633.84-.913 1.052-2.664.012-5.329.024-8.816-.181-6.278-.098-11.733.009-17.188.119-2.331.029-4.663.059-7.625-.082-1.214-.086-1.797-.002-2.38.083-.718.029-1.435.059-2.855-.108-3.18-.098-5.658.004-8.136.107-.72.03-1.44.06-2.891-.115-5.814-.095-10.935-.001-16.056.095z"
+                />
+                <path
+                  fill="#F57506"
+                  d="M551.682 691.694c-12.798 24.104-25.402 48.098-38.214 72.075-.707-.915-1.359-1.549-1.764-2.313-20.49-38.665-41.01-77.306-61.707-115.977-1.923-3.605-2.051-6.306-.078-10.003 19.812-37.118 39.407-74.329 59.068-111.55 1.07-2.024 2.182-4.027 3.681-6.79 1.282 2.224 2.292 3.86 3.192 5.554 20.296 38.221 40.548 76.467 60.938 114.637 1.384 2.59 1.165 4.49-.116 6.882-8.392 15.692-16.683 31.438-25.2 47.485m-31.646-23.099c4.527-8.527 9.175-17.007 13.469-25.635.783-1.576.811-4.218.019-5.773-5.59-10.973-11.438-21.816-17.342-32.625-.712-1.304-2.356-3.1-3.374-2.982-1.253.144-2.646 1.87-3.385 3.234-5.87 10.829-11.638 21.714-17.32 32.642-.617 1.187-1.141 3.094-.617 4.099 5.997 11.514 12.11 22.972 18.421 34.318 1.724 3.1 4.318 2.964 6.284-.01 1.369-2.072 2.371-4.386 3.845-7.268z"
+                />
+              </g>
+              <path
+                d="M23.116 18.765c.066.076.14.085.23.076.706-.07 1.607-.299 2.24-.645 1.143-.626 2.174-1.671 2.07-3.49-.105-1.817-1.248-2.58-3.582-3.868l-.724-.402c-1.589-.885-1.87-1.489-1.87-2.253 0-1.166 1.146-1.83 2.413-1.83 1.147 0 1.71.483 1.971.804.383.443.463.966.463 1.127 0 .2.06.301.181.301.14 0 .221-.18.221-.543 0-.959.03-1.48.049-1.78.007-.122.012-.207.012-.271 0-.12-.08-.181-.242-.221-.462-.121-1.367-.282-2.514-.282-2.454 0-4.465 1.348-4.465 3.44 0 1.508.777 2.468 2.869 3.695l1.025.604c1.57.925 2.122 1.4 2.122 2.34 0 1.163-.888 2.292-2.292 2.484-.232.032-.354-.157-.463-.356-.11-.198-.2-.336-.268-.398-.069-.062-.207-.06-.251.046-.045.105.066.283.172.422.08.106.162.24.25.386l.14.228c.043.066.079.128.11.182.052.087.093.157.133.204Zm71.327-.324c.764.342 1.85.442 2.876.442.945 0 2.112-.1 2.957-.704 1.287-.905 1.77-1.93 1.77-3.198 0-1.548-.724-2.856-3.058-4.143l-.724-.402c-1.588-.885-1.87-1.489-1.87-2.253 0-1.166 1.146-1.83 2.413-1.83 1.147 0 1.71.483 1.972.804.382.443.462.966.462 1.127 0 .2.06.301.181.301.141 0 .221-.18.221-.543 0-.959.031-1.48.049-1.78.007-.122.012-.207.012-.271 0-.12-.081-.181-.242-.221-.462-.121-1.367-.282-2.514-.282-2.454 0-4.465 1.348-4.465 3.44 0 1.508.684 2.654 2.776 3.881l1.025.604c1.57.925 1.75 1.669 1.75 2.413 0 1.207-.925 2.172-2.454 2.172-1.106 0-2.433-.422-2.815-1.69-.1-.3-.161-.663-.161-.884 0-.12-.02-.282-.181-.282-.141 0-.221.181-.221.443l-.004.049a33.312 33.312 0 0 0-.097 2.224c0 .382.06.462.342.583Zm-61.405-4.677V6.678l-2.467.06c-1.026.02-1.208.266-1.342.557-.098.213-.184.534-.24.74-.02.077-.036.138-.047.17-.04.141-.08.222-.201.222-.12 0-.161-.1-.161-.282a41.2 41.2 0 0 0-.005-.422c-.01-.64-.026-1.736.005-1.843.04-.221.1-.322.201-.322.058 0 .124.025.212.057.124.046.293.11.552.144.523.06 1.187.08 1.77.08h7.013c.563 0 .945-.04 1.207-.08.148-.02.257-.042.336-.057a.988.988 0 0 1 .146-.023c.121 0 .141.1.141.362 0 .172-.009.548-.018.943v.001c-.011.437-.022.896-.022 1.128-.02.18-.06.281-.16.281-.142 0-.182-.08-.202-.342l-.02-.348c-.04-.443-.503-.966-2.092-.986l-2.233-.04v7.086c0 1.57.02 2.917.101 3.66.06.484.161.806.684.886.241.04.644.06.905.06.201 0 .282.1.282.181 0 .121-.141.181-.342.181-.704 0-1.416-.022-1.98-.04a33.78 33.78 0 0 0-.876-.02c-.174 0-.496.011-.863.024-.486.017-1.05.036-1.45.036-.222 0-.342-.06-.342-.18 0-.081.06-.182.281-.182.262 0 .483-.02.624-.06.362-.08.462-.402.523-.905.08-.724.08-2.072.08-3.64Zm48.011-.573v-2.514c0-.789.002-1.383.003-1.842V8.822c.004-1.042.005-1.389-.023-1.765-.04-.604-.201-.765-.764-.925-.141-.04-.443-.06-.684-.06-.201 0-.302-.061-.302-.182 0-.12.12-.16.382-.16.543 0 1.164.013 1.694.024.394.008.738.016.961.016.2 0 .554-.009.94-.018.467-.01.981-.023 1.333-.023.261 0 .382.04.382.161 0 .12-.1.181-.281.181-.192 0-.293.019-.493.055l-.03.006c-.463.08-.604.321-.644.925-.04.543-.04 1.026-.04 3.62v2.393c0 2.495.336 3.46 1.207 4.202.59.503 1.518.626 2.121.626.765 0 1.502-.222 2.206-.905.986-.926 1.026-2.414 1.026-4.164v-2.152c0-2.537-.02-3.055-.039-3.584l-.001-.036c-.04-.584-.181-.765-.744-.925-.141-.04-.443-.06-.644-.06s-.302-.061-.302-.182c0-.12.121-.16.362-.16.788 0 1.789.03 2.049.038l.063.002c.07 0 .263-.005.513-.012.46-.012 1.115-.029 1.559-.029.241 0 .362.04.362.161 0 .12-.1.181-.302.181-.192 0-.292.019-.493.055l-.03.006c-.483.08-.603.321-.643.925l-.002.036c-.02.53-.039 1.047-.039 3.584v1.83c0 1.911-.2 3.922-1.69 5.15-1.246 1.045-2.354 1.226-3.405 1.226-.904 0-2.653-.183-3.857-1.227-.905-.784-1.71-1.99-1.71-4.465Zm-11.44 4.143c.08-.724.08-2.071.08-3.64v-3.02c0-2.592 0-3.074-.02-3.617-.04-.584-.201-.765-.764-.925-.141-.04-.443-.06-.704-.06-.181 0-.302-.061-.302-.182 0-.12.14-.16.402-.16.57 0 1.215.015 1.711.026.311.008.564.014.703.014.31 0 .884-.011 1.443-.021.531-.01 1.048-.02 1.312-.02 1.127 0 2.414.1 3.36.724.502.342 1.246 1.207 1.246 2.354 0 1.267-.13 2.56-2.232 3.88.819 1.01 2.241 3.3 3.557 5.42 1.204 1.94 2.319 3.735 2.8 4.271.92 1.027 1.525 1.147 1.83 1.208l.028.005.032.007c.181.04.282.04.423.04.14 0 .22.1.22.181 0 .14-.213.181-.434.181h-1.69c-.985 0-1.468-.1-1.93-.342-.477-.238-1.855-2.542-3.192-4.777v-.002c-.809-1.35-1.602-2.676-2.171-3.505-.228-.331-.47-.71-.69-1.052-.274-.427-.51-.797-.634-.942-.1-.1-.188-.161-.309-.161h-1.602c-.08 0-.14.133-.14.234v.241c0 1.589.02 2.916.1 3.64.06.503.141.825.684.906.262.04.644.06.865.06.14 0 .221.1.221.18 0 .122-.14.182-.362.182-.681 0-1.558-.027-2.147-.045-.297-.009-.52-.015-.608-.015-.14 0-.413.01-.735.022-.462.017-1.023.038-1.438.038-.22 0-.341-.06-.341-.181 0-.08.06-.181.281-.181.262 0 .463-.02.624-.06.362-.08.462-.403.523-.905Zm2.333-10.418v5.089c0 .18.04.24.16.301.383.12.906.161 1.348.161.704 0 1.176-.241 1.478-.462.543-.383.916-1.19.916-2.354 0-2.413-1.65-3.037-2.695-3.037-.443 0-.865.02-1.046.06-.121.04-.161.101-.161.242Zm-13.414 3.759c0-2.593 0-3.075-.02-3.618-.04-.584-.2-.765-.764-.926-.14-.04-.443-.06-.704-.06-.181 0-.302-.06-.302-.18 0-.122.141-.162.403-.162.532 0 1.131.014 1.64.025.375.008.7.015.914.015l.851.003c1.344.005 3.714.013 3.976-.003.24-.015.458-.052.611-.078.053-.01.098-.017.133-.022.044-.009.087-.025.129-.04a.476.476 0 0 1 .153-.04c.1 0 .12.08.12.16a.79.79 0 0 1-.024.15c-.032.152-.089.415-.116.957-.007.062-.017.19-.027.34-.021.288-.047.654-.074.786l-.004.015c-.021.088-.064.266-.197.266-.12 0-.14-.08-.14-.22 0-.122-.02-.423-.121-.624-.141-.302-.282-.543-1.167-.624-.302-.04-2.414-.08-2.776-.08-.08 0-.12.06-.12.16v4.317c0 .1.02.181.12.181.403 0 2.696 0 3.098-.04.422-.04.684-.173.844-.354.047-.04.085-.079.118-.111.066-.066.11-.11.164-.11.08 0 .14.08.14.18 0 .049-.008.117-.029.27-.022.167-.058.434-.11.884-.041.342-.081 1.026-.081 1.147 0 .14-.02.382-.181.382-.121 0-.161-.06-.161-.14-.008-.066-.012-.136-.017-.21-.009-.132-.018-.273-.044-.414-.1-.342-.321-.604-.985-.664-.322-.04-2.333-.08-2.776-.08-.08 0-.1.08-.1.18v1.461l-.004.684v.01c-.005.66-.01 1.486.004 1.84.04 1.167.583 1.428 2.393 1.428l.207.002c.606.005 1.843.015 2.25-.162.443-.201.704-.504.825-1.207.04-.181.139-.373.246-.31.119.07.09.218.058.38l-.002.01c-.03.153-.15.619-.302 1.019-.122.317-.214.632-.265.806v.004l-.013.042c-.105.383-.635.374-1.206.365a65.242 65.242 0 0 0-1.747-.007c-.625.003-1.21.006-1.7-.016l-.559-.014h-.003a65.29 65.29 0 0 0-1.49-.026c-.082 0-.194.003-.326.007-.194.006-.43.013-.68.013-.422.02-.864.04-1.226.04-.221 0-.342-.06-.342-.181 0-.08.06-.181.281-.181.262 0 .463-.02.624-.06.362-.081.463-.403.523-.906.08-.724.08-2.071.08-3.64v-3.02Zm-13.038.877h5.923c.04 0 .1-.02.1-.12v-.363c0-2.594-.02-3.47-.04-4.012-.04-.584-.2-.765-.764-.925-.14-.04-.442-.06-.684-.06-.2 0-.301-.061-.301-.182 0-.12.12-.16.382-.16.556 0 1.217.013 1.76.025.381.008.704.015.895.015.186 0 .516-.008.885-.017.47-.011 1.005-.024 1.387-.024.262 0 .383.04.383.161 0 .12-.121.181-.322.181-.14 0-.302.02-.523.06-.463.081-.603.322-.644.926-.04.543-.04 1.026-.04 3.62v3.017c0 1.569 0 2.916.08 3.66.06.483.161.805.705.886.24.04.623.06.905.06.18 0 .281.1.281.18 0 .122-.14.182-.362.182-.695 0-1.397-.022-1.95-.04-.36-.011-.656-.02-.846-.02-.174 0-.508.011-.885.024h-.001c-.492.017-1.06.036-1.447.036-.241 0-.382-.06-.382-.181 0-.08.08-.181.282-.181.281 0 .482-.02.643-.06.362-.08.463-.403.523-.905.08-.725.08-2.032.08-3.6v-1.308c0-.06-.06-.1-.1-.1H45.49c-.06 0-.12.02-.12.1v1.307c0 1.57.02 2.876.1 3.62.06.483.16.805.684.886.241.04.643.06.905.06.2 0 .281.1.281.18 0 .122-.14.182-.362.182-.69 0-1.408-.022-1.98-.04h-.001c-.38-.01-.695-.02-.895-.02-.173 0-.488.01-.846.023-.475.017-1.026.037-1.427.037-.22 0-.342-.06-.342-.181 0-.08.06-.181.282-.181.262 0 .463-.02.623-.06.362-.08.463-.403.523-.905.08-.725.08-2.072.08-3.64v-3.018c0-2.594 0-3.077-.02-3.62-.04-.584-.2-.765-.764-.925-.14-.04-.442-.06-.703-.06-.181 0-.302-.061-.302-.182 0-.12.14-.16.382-.16.551 0 1.178.013 1.7.024.373.009.693.016.895.016.184 0 .522-.008.902-.017.491-.01 1.054-.024 1.45-.024.242 0 .363.04.363.161 0 .12-.1.181-.322.181-.14 0-.302.02-.503.06-.483.081-.623.322-.664.926-.04.543-.04 1.418-.04 4.012v.362c0 .1.06.121.12.121Z"
+                fill="url(#gradient2)"
+              />
+              <defs>
+                <linearGradient
+                  id="gradient1"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: #ff9500; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="50%"
+                    style="stop-color: #ff9500; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #ff9500; stop-opacity: 1"
+                  />
+                </linearGradient>
+                <linearGradient
+                  id="gradient2"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: #ffffff; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="50%"
+                    style="stop-color: #ffffff; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #ffffff; stop-opacity: 1"
+                  />
+                </linearGradient>
+              </defs>
+            </svg>
+          </h1>
+
+          <p class="hero-subtitle" data-key="heroSubtitle">
+            It all started with $Astherus, then $Aster was born.
+          </p>
+
+          <div class="hero-buttons">
+            <a
+              href="https://t.me/ASTHERUSCTO"
+              class="btn btn-primary"
+              target="_blank"
+              data-key="joinCommunity"
+            >
+              JOIN COMMUNITY 🚀
+            </a>
+            <a
+              href="#contract"
+              class="btn btn-secondary"
+              data-key="viewContract"
+            >
+              VIEW CONTRACT 📜
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-image">
+          <div class="character-container">
+            <div class="character-bg"></div>
+            <div class="character-card">
+              <img
+                src="images/astherus-character.png"
+                alt="ASTHERUS Character"
+                class="character-image"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features-section" id="about">
+      <div class="features-container">
+        <h2 class="section-title" data-key="aboutTitle">ABOUT</h2>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3 class="feature-title" data-key="discoveryTitle">
+              THE DISCOVERY
+            </h3>
+            <p class="feature-description" data-key="discoveryDesc">
+              Investors are flocking to a newly found discovery after $ASTER
+              hits a new all-time high! The original identity has been revealed,
+              sparking unprecedented interest.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3 class="feature-title" data-key="legacyTitle">THE LEGACY</h3>
+            <p class="feature-description" data-key="legacyDesc">
+              $ASTHERUS represents the roots, the origin, and the authentic
+              identity. This is more than a token - it's a vision that carries
+              the spirit of innovation.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3 class="feature-title" data-key="futureTitle">THE FUTURE</h3>
+            <p class="feature-description" data-key="futureDesc">
+              While $ASTER is recognized today, $ASTHERUS carries the mission
+              that will define the project's journey into the future. Join us in
+              writing history.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section" id="tokenomics">
+      <div class="stats-container">
+        <h2
+          class="section-title"
+          style="margin-bottom: 60px"
+          data-key="tokenomicsTitle"
+        >
+          TOKENOMICS
+        </h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-number" data-key="lpBurnt">LP</div>
+            <div class="stat-label" data-key="burnt">BURNT</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔐</div>
+            <div class="stat-number" data-key="caRenounced">CA</div>
+            <div class="stat-label" data-key="renounced">RENOUNCED</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-number" data-key="noTax">0/0</div>
+            <div class="stat-label" data-key="tax">TAX</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-number" data-key="communityDriven">100%</div>
+            <div class="stat-label" data-key="community">COMMUNITY DRIVEN</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💎</div>
+            <div class="stat-number" data-key="totalSupply">1B</div>
+            <div class="stat-label" data-key="supply">TOTAL SUPPLY</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contract-section" id="contract">
+      <div class="contract-container">
+        <h2 class="section-title" data-key="contractTitle">SMART CONTRACT</h2>
+        <div class="contract-box">
+          <p
+            style="
+              color: var(--sand);
+              margin-bottom: 20px;
+              font-size: 1.3em;
+              font-family: 'Crimson Text', serif;
+              letter-spacing: 1px;
+            "
+            data-key="contractDesc"
+          >
+            OFFICIAL $ASTHERUS CONTRACT ADDRESS ON BSC
+          </p>
+          <div class="contract-address" id="contractAddress">
+            0xcomingsoon
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 20px;
+              justify-content: center;
+              flex-wrap: wrap;
+            "
+          >
+            <button
+              class="copy-btn"
+              onclick="copyContract()"
+              data-key="copyAddress"
+            >
+              COPY ADDRESS 📋
+            </button>
+            <a
+              href="https://pancakeswap.finance/swap?outputCurrency=0xcomingsoon"
+              class="btn btn-buy"
+              target="_blank"
+              style="padding: 12px 30px; font-size: 1.2em"
+              data-key="buyPancake"
+            >
+              BUY ON PANCAKESWAP 🥞
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer id="links">
+      <div class="footer-container">
+        <p
+          style="
+            color: var(--sand);
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            font-family: 'Crimson Text', serif;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+          "
+          data-key="footerTitle"
+        >
+          ASTHERUS LINKS
+        </p>
+        <div class="social-links">
+          <a
+            href="https://t.me/ASTHERUSCTO"
+            class="social-link"
+            target="_blank"
+            title="Telegram"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://x.com/AstherusCult"
+            class="social-link"
+            target="_blank"
+            title="X (Twitter)"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://www.dextools.io/app/en/bnb/pair-explorer/0xcomingsoon"
+            class="social-link"
+            target="_blank"
+            title="DexTools"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 754.779 867.058"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="m280.395 49.025c-51.649 26.905-93.905 49.672-93.896 50.598.023 2.39 123.959 65.156 128.358 65.003 2.001-.067 16.517-6.749 32.256-14.847l28.621-14.721 31.258 16.067 31.256 16.07 51.188-23.001c77.13-34.659 85.141-38.457 83.885-39.733-1.666-1.693-29.331-16.555-104.388-56.07-36.274-19.098-71.481-37.823-78.24-41.612-6.758-3.789-13.21-6.837-14.337-6.778s-44.311 22.12-95.961 49.024zm-226.532 117.306-53.766 27.772v121.886c0 67.038.706 121.885 1.572 121.885.863 0 27.316-11.467 58.783-25.482l57.213-25.482v-128.476l27.958 15.232a33224.294 33224.294 0 0 0 64.671 35.109l36.712 19.877 16.336-7.387a3822.03 3822.03 0 0 0 30.674-14.056c7.885-3.672 27.241-12.39 43.012-19.377 15.771-6.99 30.37-14.019 32.44-15.621 2.75-2.128-30.782-20.658-124.025-68.54-70.285-36.093-130.046-65.509-132.802-65.368s-29.206 12.752-58.778 28.028zm529.148 7.799c-36.618 16.531-66.604 30.717-66.638 31.526-.032.808 19.926 12.675 44.354 26.367 24.426 13.695 44.412 25.632 44.412 26.531 0 .897-21.615 11.37-48.03 23.278-26.419 11.905-93.194 42.061-148.393 67.014l-184.954 83.602c-46.525 21.032-88.462 39.989-93.193 42.132-95.03 43.019-121.15 54.956-124.737 57.005-3.607 2.063-4.424 14.048-5.066 74.201l-.766 71.744 48.08 24.498 48.079 24.497 66.669-30.088c36.669-16.547 66.669-30.953 66.669-32.014 0-1.058-6.776-5.473-15.054-9.815-8.282-4.342-25.378-13.954-37.995-21.364-12.616-7.411-25.196-14.21-27.958-15.112-2.761-.899-4.98-2.472-4.935-3.498.046-1.023 29.404-14.968 65.236-30.991 69.597-31.117 122.858-55.1 237.202-106.809a305577.39 305577.39 0 0 1 153.411-69.31c44.948-20.288 97.208-43.983 116.134-52.655l34.41-15.767.765-72.561.769-72.558-48.765-25.03c-26.822-13.765-49.748-24.994-50.95-24.953-1.201.038-32.141 13.595-68.756 30.13zm153.872 261.772c-7.186 3.51-21.38 10.082-31.542 14.603s-29.446 13.222-42.852 19.339l-24.374 11.117-.556 63.702c-.307 35.035-1.597 63.545-2.867 63.36-2.885-.429-48.567-23.857-94.487-48.463-33.143-17.757-35.225-18.463-43.013-14.606-4.502 2.231-31.413 14.3-59.801 26.825-28.389 12.523-52.541 23.587-53.677 24.589-1.133 1 56.002 31.967 126.97 68.819l129.029 67.003 55.119-28.513c30.312-15.68 56.088-29.983 57.275-31.782 2.672-4.045 2.443-242.93-.232-242.607-1.058.127-7.806 3.104-14.992 6.614zm-305.227 280.391a25013.26 25013.26 0 0 0 -28.675 12.349c-28.856 12.484-23.201 12.898-57.531-4.192-22.865-11.382-32.721-14.894-36.999-13.189-3.209 1.278-30.826 13.703-61.376 27.61-30.548 13.907-56.602 25.285-57.898 25.285-12.817 0 8.491 12.731 90.714 54.207l96.428 48.637 40.572-20.03c22.315-11.017 67.323-33.078 100.021-49.024 32.695-15.95 59.042-29.413 58.549-29.921-.497-.506-27.893-14.574-60.883-31.262l-59.982-30.338z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://dexscreener.com/bsc/0xcomingsoon"
+            class="social-link"
+            target="_blank"
+            title="DexScreener"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 252 300"
+              fill="currentColor"
+              fill-rule="evenodd"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M151.818 106.866c9.177-4.576 20.854-11.312 32.545-20.541 2.465 5.119 2.735 9.586 1.465 13.193-.9 2.542-2.596 4.753-4.826 6.512-2.415 1.901-5.431 3.285-8.765 4.033-6.326 1.425-13.712.593-20.419-3.197m1.591 46.886l12.148 7.017c-24.804 13.902-31.547 39.716-39.557 64.859-8.009-25.143-14.753-50.957-39.556-64.859l12.148-7.017a5.95 5.95 0 003.84-5.845c-1.113-23.547 5.245-33.96 13.821-40.498 3.076-2.342 6.434-3.518 9.747-3.518s6.671 1.176 9.748 3.518c8.576 6.538 14.934 16.951 13.821 40.498a5.95 5.95 0 003.84 5.845zM126 0c14.042.377 28.119 3.103 40.336 8.406 8.46 3.677 16.354 8.534 23.502 14.342 3.228 2.622 5.886 5.155 8.814 8.071 7.897.273 19.438-8.5 24.796-16.709-9.221 30.23-51.299 65.929-80.43 79.589-.012-.005-.02-.012-.029-.018-5.228-3.992-11.108-5.988-16.989-5.988s-11.76 1.996-16.988 5.988c-.009.005-.017.014-.029.018-29.132-13.66-71.209-49.359-80.43-79.589 5.357 8.209 16.898 16.982 24.795 16.709 2.929-2.915 5.587-5.449 8.814-8.071C69.31 16.94 77.204 12.083 85.664 8.406 97.882 3.103 111.959.377 126 0m-25.818 106.866c-9.176-4.576-20.854-11.312-32.544-20.541-2.465 5.119-2.735 9.586-1.466 13.193.901 2.542 2.597 4.753 4.826 6.512 2.416 1.901 5.432 3.285 8.766 4.033 6.326 1.425 13.711.593 20.418-3.197"
+              ></path>
+              <path
+                d="M197.167 75.016c6.436-6.495 12.107-13.684 16.667-20.099l2.316 4.359c7.456 14.917 11.33 29.774 11.33 46.494l-.016 26.532.14 13.754c.54 33.766 7.846 67.929 24.396 99.193l-34.627-27.922-24.501 39.759-25.74-24.231L126 299.604l-41.132-66.748-25.739 24.231-24.501-39.759L0 245.25c16.55-31.264 23.856-65.427 24.397-99.193l.14-13.754-.016-26.532c0-16.721 3.873-31.578 11.331-46.494l2.315-4.359c4.56 6.415 10.23 13.603 16.667 20.099l-2.01 4.175c-3.905 8.109-5.198 17.176-2.156 25.799 1.961 5.554 5.54 10.317 10.154 13.953 4.48 3.531 9.782 5.911 15.333 7.161 3.616.814 7.3 1.149 10.96 1.035-.854 4.841-1.227 9.862-1.251 14.978L53.2 160.984l25.206 14.129a41.926 41.926 0 015.734 3.869c20.781 18.658 33.275 73.855 41.861 100.816 8.587-26.961 21.08-82.158 41.862-100.816a41.865 41.865 0 015.734-3.869l25.206-14.129-32.665-18.866c-.024-5.116-.397-10.137-1.251-14.978 3.66.114 7.344-.221 10.96-1.035 5.551-1.25 10.854-3.63 15.333-7.161 4.613-3.636 8.193-8.399 10.153-13.953 3.043-8.623 1.749-17.689-2.155-25.799l-2.01-4.175z"
+              ></path>
+            </svg>
+          </a>
+          <a href="#" class="social-link" target="_blank" title="CoinGecko">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 1000 1011"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_732_1340)">
+                <path
+                  d="M497.766 0.392197C773.882 -0.828538 998.745 223.585 999.995 501.717C1001.14 757.094 813.355 968.919 568.881 1002.85C381.112 1029.33 197.133 948.682 89.6367 791.779C33.5576 710.813 0.483151 612.448 0.00585938 506.257C-1.24422 228.125 221.611 1.65123 497.766 0.392197ZM497.903 31.6422C239.215 32.8217 30.0815 245.033 31.2549 506.117C31.6665 597.691 57.8948 683.018 102.939 755.165C134.57 668.589 140.089 587.87 148.695 483.863C155.815 373.914 185.259 282.593 370.885 231.071C411.689 221.202 454.151 224.377 497.148 234.113C563.17 221.606 636.337 219.49 685.125 300.153C708.309 309.046 731.18 317.264 753.562 323.782L753.523 323.744C944.667 376.291 926.371 481.338 833.185 569.352C809.543 594.008 784.074 617.251 767.66 634.082C700.727 702.699 585.608 832.129 586.387 968.326C804.705 927.334 969.788 733.9 968.745 501.858C967.572 240.775 756.555 30.4985 497.903 31.6422ZM429.07 282.553C375.696 282.553 332.398 326.085 332.397 379.88C332.398 433.675 375.696 477.246 429.07 477.246C482.445 477.246 525.743 433.675 525.743 379.88C525.743 326.124 482.445 282.553 429.07 282.553ZM429.07 298.178C437.715 298.178 446.05 299.546 453.872 302.08C437.212 307.802 423.443 323.825 416.208 345.052L467.438 379.206L416.203 413.361C423.738 435.478 438.364 451.95 455.964 457.009C447.543 459.997 438.49 461.621 429.07 461.621C384.426 461.621 348.023 425.147 348.022 379.88C348.023 334.622 384.418 298.178 429.07 298.178Z"
+                  fill="currentColor"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_732_1340">
+                  <rect
+                    width="1000"
+                    height="1010.61"
+                    fill="white"
+                    transform="translate(0 0.38739)"
+                  />
+                </clipPath>
+              </defs>
+            </svg>
+          </a>
+          <a
+            href="#"
+            class="social-link"
+            target="_blank"
+            title="CoinMarketCap"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 76.52 77.67"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m66.54 46.41a4.09 4.09 0 0 1 -4.17.28c-1.54-.87-2.37-2.91-2.37-5.69v-8.52c0-4.09-1.62-7-4.33-7.79-4.58-1.34-8 4.27-9.32 6.38l-8.1 13.11v-16c-.09-3.69-1.29-5.9-3.56-6.56-1.5-.44-3.75-.26-5.94 3.08l-18.11 29.07a32 32 0 0 1 -3.64-14.94c0-17.52 14-31.77 31.25-31.77s31.3 14.25 31.3 31.77v.09s0 .06 0 .09c.17 3.39-.93 6.09-3 7.4zm10-7.57v-.17c-.14-21.35-17.26-38.67-38.29-38.67s-38.25 17.42-38.25 38.83 17.16 38.84 38.25 38.84a37.81 37.81 0 0 0 26-10.36 3.56 3.56 0 0 0 .18-5 3.43 3.43 0 0 0 -4.86-.23 30.93 30.93 0 0 1 -44.57-2.08l16.3-26.2v12.09c0 5.81 2.25 7.69 4.14 8.24s4.78.17 7.81-4.75l9-14.57c.28-.47.55-.87.79-1.22v7.41c0 5.43 2.18 9.77 6 11.91a11 11 0 0 0 11.21-.45c4.2-2.73 6.49-7.67 6.25-13.62z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+          <a
+            href="#"
+            class="social-link"
+            target="_blank"
+            title="Medium"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 1024 1024"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1024 704.736V797.736C1018.16 798.3 1012.16 798.588 1006 798.588C896.061 798.588 834.166 707.016 831.497 592.432C831.418 588.002 831.448 583.6 831.546 579.228C831.606 576.501 831.714 573.783 831.852 571.075C831.921 569.628 831.989 568.269 832.098 566.753C832.206 565.236 832.315 563.72 832.443 562.204C836.401 511.613 852.687 466.594 879.568 433.284C896.267 412.606 916.334 396.852 939.09 386.316C959.078 376.253 987.17 370.699 1010.07 370.699H1011.06C1015.4 370.699 1019.71 370.844 1024 371.13V396.717C1019.45 395.47 1014.58 394.801 1009.4 394.715C963.086 395.67 935.486 451.145 932.049 528.007H1024V549.669H929.972L929.942 549.689C925.703 624.579 966.692 687.87 1024 704.736Z"
+                fill="currentColor"
+              />
+              <path
+                d="M836.115 244.625L836.923 244.448V238.195H672.014L518.891 598.084L365.768 238.195H188.059V244.448L188.857 244.625C218.957 251.419 234.239 261.551 234.239 298.091V725.872C234.239 762.412 218.898 772.544 188.798 779.338L188 779.516V785.788H308.57V779.535L307.773 779.358C277.672 772.564 262.39 762.432 262.39 725.892V322.905L459.093 785.788H470.249L672.683 309.996V736.457C670.104 765.317 654.96 774.228 627.705 780.382L626.897 780.569V786.773H836.923V780.569L836.115 780.382C808.831 774.228 793.322 765.317 790.743 736.457L790.605 298.091H790.743C790.743 261.551 806.024 251.419 836.115 244.625Z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+        </div>
+        <p
+          style="
+            color: var(--sand);
+            font-size: 1.2em;
+            font-family: 'Crimson Text', serif;
+            letter-spacing: 1px;
+          "
+          data-key="copyright"
+        >
+          © 2025 ASTHERUS - The Original Name Behind $ASTER
+        </p>
+        <p
+          style="
+            color: rgba(212, 165, 116, 0.5);
+            margin-top: 10px;
+            font-family: 'Crimson Text', serif;
+          "
+          data-key="contact"
+        >
+          Built with mystery and innovation 🎩 contact@astherus.name
+        </p>
+
+        <div
+          style="
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 140, 0, 0.1);
+          "
+        >
+          <p
+            style="
+              color: rgba(212, 165, 116, 0.3);
+              font-size: 0.75em;
+              line-height: 1.6;
+              max-width: 900px;
+              margin: 0 auto;
+              font-family: 'Space Grotesk', sans-serif;
+              text-align: center;
+            "
+            data-key="disclaimer"
+          >
+            <strong>DISCLAIMER:</strong> $ASTHERUS is a meme token created for
+            entertainment purposes only. It has no association with any other
+            projects or entities. This token holds no intrinsic value and should
+            not be considered as a financial investment. There is no formal team
+            or roadmap. The token is completely decentralized and
+            community-driven. Trading cryptocurrencies carries substantial risk
+            of loss. Always conduct your own research and never invest more than
+            you can afford to lose. By purchasing $ASTHERUS, you acknowledge
+            that you understand and accept these risks. All imagery and branding
+            are original creations of the $ASTHERUS community. Any resemblance
+            to other projects is purely coincidental. Not financial advice.
+            DYOR.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast" data-key="toastMessage">
+      Contract address copied!
+    </div>
+
+    <script>
+      const translations = {
+        en: {
+          langLabel: "SELECT LANGUAGE",
+          mysteryTitle: "ENTER THE MYSTERY",
+          revealTruth: "REVEAL THE TRUTH",
+          stage1Title: "YEAR 2025: THE DISCOVERY",
+          stage1Text1: "A hidden smart contract was found...",
+          stage1Text2: "Deep in the blockchain archives...",
+          stage1Text3: "The original name was revealed...",
+          continueBtn: "CONTINUE →",
+          stage2Title: "THE TRANSFORMATION",
+          stage2Text1: "What was known as $ASTER was always meant to be...",
+          stage2Text2: "$ASTHERUS - The Original Vision",
+          witnessMoreBtn: "WITNESS MORE →",
+          stage3Title: "THE ANCIENT PROPHECY",
+          prophecy1: "When the desert sun meets the digital moon",
+          prophecy2: "ASTHERUS shall rise beyond the dune",
+          prophecy3: "Those who believe in the original name",
+          prophecy4: "Shall witness wealth and eternal fame",
+          numbersBtn: "THE NUMBERS →",
+          stage4Title: "THE INEVITABLE FUTURE",
+          xPotential: "X POTENTIAL",
+          millionMc: "MILLION MC",
+          holdersSoon: "HOLDERS SOON",
+          finalBtn: "FINAL REVELATION →",
+          stage5Title: "THE ORIGINAL NAME REVEALED!",
+          siteLink: "🔥 www.astherus.com (webarchive) 🔥",
+          joinRevolution: "JOIN THE REVOLUTION NOW",
+          badgeText: "🎩 THE ORIGINAL NAME REVEALED",
+          heroSubtitle: "It all started with $Astherus, then $Aster was born.",
+          joinCommunity: "JOIN COMMUNITY 🚀",
+          viewContract: "VIEW CONTRACT 📜",
+          aboutTitle: "ABOUT",
+          discoveryTitle: "THE DISCOVERY",
+          discoveryDesc:
+            "Investors are flocking to a newly found discovery after $ASTER hits a new all-time high! The original identity has been revealed, sparking unprecedented interest.",
+          legacyTitle: "THE LEGACY",
+          legacyDesc:
+            "$ASTHERUS represents the roots, the origin, and the authentic identity. This is more than a token - it's a vision that carries the spirit of innovation.",
+          futureTitle: "THE FUTURE",
+          futureDesc:
+            "While $ASTER is recognized today, $ASTHERUS carries the mission that will define the project's journey into the future. Join us in writing history.",
+          tokenomicsTitle: "TOKENOMICS",
+          lpBurnt: "LP",
+          burnt: "BURNT",
+          caRenounced: "CA",
+          renounced: "RENOUNCED",
+          noTax: "0/0",
+          tax: "TAX",
+          communityDriven: "100%",
+          community: "COMMUNITY DRIVEN",
+          totalSupply: "1B",
+          supply: "TOTAL SUPPLY",
+          contractTitle: "SMART CONTRACT",
+          contractDesc: "OFFICIAL $ASTHERUS CONTRACT ADDRESS ON BSC",
+          copyAddress: "COPY ADDRESS 📋",
+          buyPancake: "BUY ON PANCAKESWAP 🥞",
+          footerTitle: "ASTHERUS LINKS",
+          copyright: "© 2025 ASTHERUS - The Original Name Behind $ASTER",
+          contact: "Built with mystery and innovation 🎩 contact@astherus.name",
+          disclaimer:
+            "<strong>DISCLAIMER:</strong> $ASTHERUS is a meme token created for entertainment purposes only. It has no association with any other projects or entities. This token holds no intrinsic value and should not be considered as a financial investment. There is no formal team or roadmap. The token is completely decentralized and community-driven. Trading cryptocurrencies carries substantial risk of loss. Always conduct your own research and never invest more than you can afford to lose. By purchasing $ASTHERUS, you acknowledge that you understand and accept these risks. All imagery and branding are original creations of the $ASTHERUS community. Any resemblance to other projects is purely coincidental. Not financial advice. DYOR.",
+          toastMessage: "Contract address copied!",
+          navAbout: "ABOUT",
+          navTokenomics: "TOKENOMICS",
+          navMystery: "MYSTERY",
+          navContract: "CONTRACT",
+          navLinks: "LINKS",
+          navBuy: "BUY",
+        },
+        zh: {
+          langLabel: "选择语言",
+          mysteryTitle: "进入神秘",
+          revealTruth: "揭露真相",
+          stage1Title: "2025年：发现",
+          stage1Text1: "发现了一个隐藏的智能合约...",
+          stage1Text2: "深藏在区块链档案中...",
+          stage1Text3: "原始名称被揭露...",
+          continueBtn: "继续 →",
+          stage2Title: "转变",
+          stage2Text1: "$ASTER本来就应该是...",
+          stage2Text2: "$ASTHERUS - 原始愿景",
+          witnessMoreBtn: "见证更多 →",
+          stage3Title: "古代预言",
+          prophecy1: "当沙漠之阳遇见数字月光",
+          prophecy2: "ASTHERUS将跃过沙丘",
+          prophecy3: "那些相信原始名字的人",
+          prophecy4: "将见证财富和永恒的名誉",
+          numbersBtn: "数字 →",
+          stage4Title: "不可避免的未来",
+          xPotential: "X倍潜力",
+          millionMc: "百万市值",
+          holdersSoon: "持有者即将加入",
+          finalBtn: "最终启示 →",
+          stage5Title: "原始名称被揭露！",
+          siteLink: "🔥 www.astherus.com (网络档案) 🔥",
+          joinRevolution: "立即加入革命",
+          badgeText: "🎩 原始名称被揭露",
+          heroSubtitle: "一切始于$Astherus，然后$Aster诞生了。",
+          joinCommunity: "加入社区 🚀",
+          viewContract: "查看合约 📜",
+          aboutTitle: "关于",
+          discoveryTitle: "发现",
+          discoveryDesc:
+            "$ASTER创下历史新高后，投资者纷纷涌向这个新发现！原始身份已被揭露，引发了前所未有的关注。",
+          legacyTitle: "遗产",
+          legacyDesc:
+            "$ASTHERUS代表根源、起源和真实身份。这不仅是一个代币 - 更是承载创新精神的愿景。",
+          futureTitle: "未来",
+          futureDesc:
+            "虽然$ASTER今天得到认可，但$ASTHERUS承载的使命将定义该项目的未来。加入我们一起创造历史。",
+          tokenomicsTitle: "代币经济学",
+          lpBurnt: "LP",
+          burnt: "已销毁",
+          caRenounced: "CA",
+          renounced: "已放弃",
+          noTax: "0/0",
+          tax: "税费",
+          communityDriven: "100%",
+          community: "社区驱动",
+          totalSupply: "1B",
+          supply: "总供应量",
+          contractTitle: "智能合约",
+          contractDesc: "BSC链上的官方$ASTHERUS合约地址",
+          copyAddress: "复制地址 📋",
+          buyPancake: "在PANCAKESWAP上购买 🥞",
+          footerTitle: "ASTHERUS链接",
+          copyright: "© 2025 ASTHERUS - $ASTER背后的原始名称",
+          contact: "以神秘和创新精神打造 🎩 contact@astherus.name",
+          disclaimer:
+            "<strong>免责声明：</strong> $ASTHERUS是一个为娱乐目的创建的模因代币。它与任何其他项目或实体无关。该代币没有内在价值，不应被视为金融投资。没有正式的团队或路线图。该代币完全去中心化和社区驱动。交易加密货币存在重大亏损风险。始终进行自己的研究，永远不要投入超过您能承受的损失。通过购买$ASTHERUS，您承认您理解并接受这些风险。所有图像和品牌都是$ASTHERUS社区的原创作品。与其他项目的任何相似之处纯属巧合。非财务建议。自己研究。",
+          toastMessage: "合约地址已复制！",
+          navAbout: "关于",
+          navTokenomics: "代币经济学",
+          navMystery: "神秘",
+          navContract: "合约",
+          navLinks: "链接",
+          navBuy: "购买",
+        },
+        ar: {
+          langLabel: "اختر اللغة",
+          mysteryTitle: "ادخل الغموض",
+          revealTruth: "كشف الحقيقة",
+          stage1Title: "عام 2025: الاكتشاف",
+          stage1Text1: "تم العثور على عقد ذكي مخفي...",
+          stage1Text2: "عميقاً في أرشيفات البلوكشين...",
+          stage1Text3: "تم الكشف عن الاسم الأصلي...",
+          continueBtn: "استمر ←",
+          stage2Title: "التحول",
+          stage2Text1:
+            "ما كان معروفاً باسم $ASTER كان من المفترض دائماً أن يكون...",
+          stage2Text2: "$ASTHERUS - الرؤية الأصلية",
+          witnessMoreBtn: "شاهد المزيد ←",
+          stage3Title: "النبوءة القديمة",
+          prophecy1: "عندما تلتقي شمس الصحراء بالقمر الرقمي",
+          prophecy2: "سيرتفع ASTHERUS فوق الكثبان",
+          prophecy3: "أولئك الذين يؤمنون بالاسم الأصلي",
+          prophecy4: "سيشهدون الثروة والشهرة الأبدية",
+          numbersBtn: "الأرقام ←",
+          stage4Title: "المستقبل الحتمي",
+          xPotential: "إمكانات X",
+          millionMc: "مليون MC",
+          holdersSoon: "حاملون قريباً",
+          finalBtn: "الكشف النهائي ←",
+          stage5Title: "تم الكشف عن الاسم الأصلي!",
+          siteLink: "🔥 www.astherus.com (أرشيف الويب) 🔥",
+          joinRevolution: "انضم إلى الثورة الآن",
+          badgeText: "🎩 تم الكشف عن الاسم الأصلي",
+          heroSubtitle: "بدأ كل شيء بـ $Astherus، ثم ولد $Aster.",
+          joinCommunity: "انضم للمجتمع 🚀",
+          viewContract: "عرض العقد 📜",
+          aboutTitle: "حول",
+          discoveryTitle: "الاكتشاف",
+          discoveryDesc:
+            "يتدفق المستثمرون إلى اكتشاف جديد بعد أن وصل $ASTER إلى أعلى مستوى له على الإطلاق! تم الكشف عن الهوية الأصلية، مما أثار اهتماماً غير مسبوق.",
+          legacyTitle: "الإرث",
+          legacyDesc:
+            "$ASTHERUS يمثل الجذور والأصل والهوية الأصيلة. هذا أكثر من مجرد رمز - إنها رؤية تحمل روح الابتكار.",
+          futureTitle: "المستقبل",
+          futureDesc:
+            "بينما يتم التعرف على $ASTER اليوم، يحمل $ASTHERUS المهمة التي ستحدد رحلة المشروع في المستقبل. انضم إلينا في كتابة التاريخ.",
+          tokenomicsTitle: "اقتصاديات الرمز",
+          lpBurnt: "LP",
+          burnt: "محترق",
+          caRenounced: "CA",
+          renounced: "متنازل عنه",
+          noTax: "0/0",
+          tax: "ضريبة",
+          communityDriven: "100%",
+          community: "مدفوع بالمجتمع",
+          totalSupply: "1B",
+          supply: "إجمالي العرض",
+          contractTitle: "العقد الذكي",
+          contractDesc: "عنوان عقد $ASTHERUS الرسمي على BSC",
+          copyAddress: "نسخ العنوان 📋",
+          buyPancake: "اشتر على PANCAKESWAP 🥞",
+          footerTitle: "روابط ASTHERUS",
+          copyright: "© 2025 ASTHERUS - الاسم الأصلي وراء $ASTER",
+          contact: "مبني بالغموض والابتكار 🎩 contact@astherus.name",
+          disclaimer:
+            "<strong>إخلاء المسؤولية:</strong> $ASTHERUS هو رمز ميم تم إنشاؤه لأغراض الترفيه فقط. ليس له أي ارتباط بأي مشاريع أو كيانات أخرى. هذا الرمز ليس له قيمة جوهرية ولا ينبغي اعتباره استثماراً مالياً. لا يوجد فريق رسمي أو خارطة طريق. الرمز لامركزي تماماً ويقوده المجتمع. تداول العملات المشفرة يحمل مخاطر خسارة كبيرة. قم دائماً بإجراء بحثك الخاص ولا تستثمر أبداً أكثر مما يمكنك تحمل خسارته. من خلال شراء $ASTHERUS، فإنك تقر بأنك تفهم وتقبل هذه المخاطر. جميع الصور والعلامات التجارية هي إبداعات أصلية لمجتمع $ASTHERUS. أي تشابه مع مشاريع أخرى هو من قبيل الصدفة البحتة. ليس نصيحة مالية. قم ببحثك الخاص.",
+          toastMessage: "تم نسخ عنوان العقد!",
+          navAbout: "حول",
+          navTokenomics: "اقتصاديات الرمز",
+          navMystery: "الغموض",
+          navContract: "العقد",
+          navLinks: "الروابط",
+          navBuy: "اشتر",
+        },
+        tr: {
+          langLabel: "DİLİ SEÇİN",
+          mysteryTitle: "SIRRA GİRİN",
+          revealTruth: "HAKİKATİ ORTAYA ÇIKAR",
+          stage1Title: "2025 YILI: KEŞİF",
+          stage1Text1: "Gizli bir akıllı sözleşme bulundu...",
+          stage1Text2: "Blokzincir arşivlerinin derinliklerinde...",
+          stage1Text3: "Orijinal ad ortaya çıktı...",
+          continueBtn: "DEVAM ET →",
+          stage2Title: "DÖNÜŞÜM",
+          stage2Text1:
+            "$ASTER olarak bilinen her zaman şöyle olması gerekiyordu...",
+          stage2Text2: "$ASTHERUS - Orijinal Vizyon",
+          witnessMoreBtn: "DAHA FAZLASINI GÖRDÜ →",
+          stage3Title: "ESKİ KEHANET",
+          prophecy1: "Çöl güneşi dijital ayla buluştuğunda",
+          prophecy2: "ASTHERUS kumun ötesine yükselecek",
+          prophecy3: "Orijinal adına inananlar",
+          prophecy4: "Zenginlik ve sonsuz şan tanık olacaklar",
+          numbersBtn: "SAYILAR →",
+          stage4Title: "KAÇINILMAZ GELECEK",
+          xPotential: "X POTANSİYEL",
+          millionMc: "MİLYON MC",
+          holdersSoon: "SAHİPLER YAKINDA",
+          finalBtn: "SON AÇIKLAMA →",
+          stage5Title: "ORİJİNAL AD ORTAYA ÇIKTI!",
+          siteLink: "🔥 www.astherus.com (web arşivi) 🔥",
+          joinRevolution: "ŞİMDİ DEVRİME KATIL",
+          badgeText: "🎩 ORİJİNAL AD ORTAYA ÇIKTI",
+          heroSubtitle: "Her şey $Astherus ile başladı, sonra $Aster doğdu.",
+          joinCommunity: "TOPLULUĞA KATIL 🚀",
+          viewContract: "SÖZLEŞMEYİ GÖRÜNTÜLE 📜",
+          aboutTitle: "HAKKINDA",
+          discoveryTitle: "KEŞİF",
+          discoveryDesc:
+            "$ASTER yeni zirveye ulaştıktan sonra yatırımcılar yeni bir keşfe koşuyor! Orijinal kimlik ortaya çıktı, benzeri görülmemiş ilgiye neden oldu.",
+          legacyTitle: "MİRAS",
+          legacyDesc:
+            "$ASTHERUS kökü, kaynağı ve gerçek kimliği temsil eder. Bu sadece bir jeton değil - inovasyonun ruhunu taşıyan bir vizyondur.",
+          futureTitle: "GELECEĞİ",
+          futureDesc:
+            "$ASTER bugün tanınırken, $ASTHERUS proje yolculuğunun geleceğini tanımlayacak misyonu taşır. Tarih yazmamıza katılın.",
+          tokenomicsTitle: "TOKEN EKONOMİSİ",
+          lpBurnt: "LP",
+          burnt: "YAKILDI",
+          caRenounced: "CA",
+          renounced: "FERAGAT EDİLDİ",
+          noTax: "0/0",
+          tax: "VERGİ",
+          communityDriven: "100%",
+          community: "TOPLULUK TARAFINDAN YÖNETİLEN",
+          totalSupply: "1B",
+          supply: "TOPLAM ARZ",
+          contractTitle: "AKILLI SÖZLEŞME",
+          contractDesc: "BSC ÜZERİNDE RESMİ $ASTHERUS SÖZLEŞME ADRESİ",
+          copyAddress: "ADRESİ KOPYALA 📋",
+          buyPancake: "PANCAKESWAP'TA SATIN AL 🥞",
+          footerTitle: "ASTHERUS BAĞLANTILARI",
+          copyright: "© 2025 ASTHERUS - $ASTER Arkasındaki Orijinal Ad",
+          contact:
+            "Gizem ve inovasyon ile inşa edildi 🎩 contact@astherus.name",
+          disclaimer:
+            "<strong>SORUMLULUK REDDİ:</strong> $ASTHERUS sadece eğlence amaçlı oluşturulan bir meme jetondur. Başka herhangi bir proje veya varlıkla hiçbir ilişkisi yoktur. Bu jeton herhangi bir içsel değere sahip değildir ve finansal bir yatırım olarak kabul edilmemelidir. Resmi bir ekip veya yol haritası yoktur. Jeton tamamen merkezi olmayan ve topluluk tarafından yönetilidir. Kripto para alışverişi önemli kayıp riski taşır. Her zaman kendi araştırmanızı yapın ve asla gücünüzün ötesinde yatırım yapmayın. $ASTHERUS satın alarak, bu riskleri anladığınızı ve kabul ettiğinizi kabul etmiş olursunuz. Tüm görüntüler ve markalama, $ASTHERUS topluluğunun orijinal yaratımlarıdır. Diğer projelerle herhangi bir benzerlik tamamen tesadüfidir. Mali tavsiye değil. DYOR.",
+          toastMessage: "Sözleşme adresi kopyalandı!",
+          navAbout: "HAKKINDA",
+          navTokenomics: "TOKEN EKONOMİSİ",
+          navMystery: "SIRRA",
+          navContract: "SÖZLEŞME",
+          navLinks: "BAĞLANTILARI",
+          navBuy: "SATIN AL",
+        },
+        de: {
+          langLabel: "SPRACHE WÄHLEN",
+          mysteryTitle: "BETRETEN SIE DAS GEHEIMNIS",
+          revealTruth: "DIE WAHRHEIT ENTHÜLLEN",
+          stage1Title: "JAHR 2025: DIE ENTDECKUNG",
+          stage1Text1:
+            "Ein versteckter intelligenter Vertrag wurde gefunden...",
+          stage1Text2: "Tief in den Blockchain-Archiven...",
+          stage1Text3: "Der ursprüngliche Name wurde offenbart...",
+          continueBtn: "FORTFAHREN →",
+          stage2Title: "DIE UMWANDLUNG",
+          stage2Text1: "Das, was als $ASTER bekannt war, sollte immer sein...",
+          stage2Text2: "$ASTHERUS - Die ursprüngliche Vision",
+          witnessMoreBtn: "MEHR BEZEUGEN →",
+          stage3Title: "DIE ALTE PROPHEZEIUNG",
+          prophecy1: "Wenn die Wüstensonne auf den digitalen Mond trifft",
+          prophecy2: "ASTHERUS wird über die Düne aufsteigen",
+          prophecy3: "Diejenigen, die an den ursprünglichen Namen glauben",
+          prophecy4: "Werden Wohlstand und ewigen Ruhm bezeugen",
+          numbersBtn: "DIE ZAHLEN →",
+          stage4Title: "DIE UNVERMEIDLICHE ZUKUNFT",
+          xPotential: "X POTENTIAL",
+          millionMc: "MILLIONEN MC",
+          holdersSoon: "HALTER BALD",
+          finalBtn: "ENDGÜLTIGE OFFENBARUNG →",
+          stage5Title: "DER URSPRÜNGLICHE NAME WURDE ENTHÜLLT!",
+          siteLink: "🔥 www.astherus.com (Web-Archiv) 🔥",
+          joinRevolution: "JETZT DER REVOLUTION BEITRETEN",
+          badgeText: "🎩 DER URSPRÜNGLICHE NAME WURDE ENTHÜLLT",
+          heroSubtitle:
+            "Es fing alles mit $Astherus an, dann wurde $Aster geboren.",
+          joinCommunity: "GEMEINSCHAFT BEITRETEN 🚀",
+          viewContract: "VERTRAG ANZEIGEN 📜",
+          aboutTitle: "ÜBER",
+          discoveryTitle: "DIE ENTDECKUNG",
+          discoveryDesc:
+            "Nachdem $ASTER ein neues Allzeithoch erreicht hat, strömen Anleger zu einer neu entdeckten Entdeckung! Die ursprüngliche Identität wurde enthüllt und hat beispiellose Aufmerksamkeit erregt.",
+          legacyTitle: "DAS VERMÄCHTNIS",
+          legacyDesc:
+            "$ASTHERUS repräsentiert die Wurzeln, die Herkunft und die authentische Identität. Dies ist mehr als ein Token - es ist eine Vision, die den Geist der Innovation trägt.",
+          futureTitle: "DIE ZUKUNFT",
+          futureDesc:
+            "Während $ASTER heute anerkannt ist, trägt $ASTHERUS die Mission, die die zukünftige Reise des Projekts definieren wird. Schreiben Sie mit uns Geschichte.",
+          tokenomicsTitle: "TOKENOMICS",
+          lpBurnt: "LP",
+          burnt: "VERBRANNT",
+          caRenounced: "CA",
+          renounced: "VERZICHTET",
+          noTax: "0/0",
+          tax: "STEUERN",
+          communityDriven: "100%",
+          community: "COMMUNITY-GESTEUERT",
+          totalSupply: "1B",
+          supply: "GESAMTMENGE",
+          contractTitle: "INTELLIGENTER VERTRAG",
+          contractDesc: "OFFIZIELLE $ASTHERUS-VERTRAGSADRESSE AUF BSC",
+          copyAddress: "ADRESSE KOPIEREN 📋",
+          buyPancake: "AUF PANCAKESWAP KAUFEN 🥞",
+          footerTitle: "ASTHERUS-LINKS",
+          copyright: "© 2025 ASTHERUS - Der ursprüngliche Name hinter $ASTER",
+          contact:
+            "Mit Geheimnis und Innovation gebaut 🎩 contact@astherus.name",
+          disclaimer:
+            "<strong>HAFTUNGSAUSSCHLUSS:</strong> $ASTHERUS ist ein Meme-Token, der nur zu Unterhaltungszwecken erstellt wurde. Es hat keine Verbindung zu anderen Projekten oder Einrichtungen. Dieser Token hat keinen inneren Wert und sollte nicht als Finanzinvestition betrachtet werden. Es gibt kein formelles Team oder Roadmap. Der Token ist vollständig dezentralisiert und gemeinschaftsgesteuert. Der Handel mit Kryptowährungen birgt erhebliche Verlustrisiken. Führen Sie immer Ihre eigenen Recherchen durch und investieren Sie niemals mehr als Sie sich leisten können zu verlieren. Durch den Kauf von $ASTHERUS bestätigen Sie, dass Sie diese Risiken verstehen und akzeptieren. Alle Bilder und Markenzeichen sind ursprüngliche Kreationen der $ASTHERUS-Gemeinschaft. Jede Ähnlichkeit mit anderen Projekten ist rein zufällig. Keine Finanzberatung. Machen Sie Ihre eigenen Recherchen.",
+          toastMessage: "Vertragsadresse kopiert!",
+          navAbout: "ÜBER",
+          navTokenomics: "TOKENOMICS",
+          navMystery: "GEHEIMNIS",
+          navContract: "VERTRAG",
+          navLinks: "LINKS",
+          navBuy: "KAUFEN",
+        },
+      };
+
+      let currentLanguage = "en";
+      const languageFlags = {
+        en: "https://flagcdn.com/48x36/us.png",
+        zh: "https://flagcdn.com/48x36/cn.png",
+        tr: "https://flagcdn.com/48x36/tr.png",
+        de: "https://flagcdn.com/48x36/de.png",
+        ar: "https://flagcdn.com/48x36/ae.png",
+      };
+
+      function setLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem("selectedLanguage", lang);
+        updatePageTranslations();
+        updateHeaderFlag();
+        document
+          .querySelectorAll(".lang-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        if (event && event.target) {
+          event.target.classList.add("active");
+        }
+        setTimeout(() => {
+          document.getElementById("loader").classList.add("hidden");
+        }, 500);
+      }
+
+      function updateHeaderFlag() {
+        const flagElement = document.getElementById("currentLangFlag");
+        if (flagElement) {
+          flagElement.src = languageFlags[currentLanguage];
+          flagElement.srcset =
+            languageFlags[currentLanguage].replace("48x36", "96x72") + " 2x";
+        }
+      }
+
+      function toggleHeaderLangDropdown() {
+        const dropdown = document.getElementById("headerLangDropdown");
+        dropdown.classList.toggle("active");
+      }
+
+      function changeHeaderLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem("selectedLanguage", lang);
+        updatePageTranslations();
+        updateHeaderFlag();
+        const dropdown = document.getElementById("headerLangDropdown");
+        if (dropdown) {
+          dropdown.classList.remove("active");
+        }
+      }
+
+      document.addEventListener("click", (e) => {
+        const selector = document.querySelector(".header-lang-selector");
+        const dropdown = document.getElementById("headerLangDropdown");
+        if (selector && !selector.contains(e.target) && dropdown) {
+          dropdown.classList.remove("active");
+        }
+      });
+
+      function updatePageTranslations() {
+        document.querySelectorAll("[data-key]").forEach((element) => {
+          const key = element.getAttribute("data-key");
+          if (
+            translations[currentLanguage] &&
+            translations[currentLanguage][key]
+          ) {
+            if (element.hasAttribute("data-text")) {
+              element.setAttribute(
+                "data-text",
+                translations[currentLanguage][key]
+              );
+            }
+            if (key === "disclaimer") {
+              element.innerHTML = translations[currentLanguage][key];
+            } else {
+              if (
+                element.tagName === "BUTTON" &&
+                element.classList.contains("lang-btn")
+              ) {
+                return;
+              }
+              element.textContent = translations[currentLanguage][key];
+            }
+          }
+        });
+      }
+
+      window.addEventListener("load", () => {
+        const savedLanguage = localStorage.getItem("selectedLanguage");
+
+        if (savedLanguage) {
+          currentLanguage = savedLanguage;
+          document.querySelector(".language-selector").style.display = "none";
+          document.querySelector(".language-label").style.display = "none";
+          updatePageTranslations();
+          updateHeaderFlag();
+          document
+            .querySelector(`[onclick="setLanguage('${savedLanguage}')"]`)
+            ?.classList.add("active");
+          setTimeout(() => {
+            document.getElementById("loader").classList.add("hidden");
+          }, 1000);
+        }
+      });
+
+      const cursor = document.querySelector(".cursor");
+      const cursorFollower = document.querySelector(".cursor-follower");
+
+      document.addEventListener("mousemove", (e) => {
+        cursor.style.left = e.clientX - 10 + "px";
+        cursor.style.top = e.clientY - 10 + "px";
+        setTimeout(() => {
+          cursorFollower.style.left = e.clientX - 20 + "px";
+          cursorFollower.style.top = e.clientY - 20 + "px";
+        }, 100);
+      });
+
+      window.addEventListener("scroll", () => {
+        const header = document.getElementById("header");
+        if (window.scrollY > 50) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
+      });
+
+      const hamburger = document.getElementById("hamburger");
+      const navMenu = document.getElementById("navMenu");
+
+      hamburger.addEventListener("click", () => {
+        navMenu.classList.toggle("active");
+      });
+
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+            navMenu.classList.remove("active");
+          }
+        });
+      });
+
+      function copyContract() {
+        const contractAddress = "0xcomingsoon";
+        navigator.clipboard.writeText(contractAddress).then(() => {
+          const toast = document.getElementById("toast");
+          toast.classList.add("show");
+          setTimeout(() => {
+            toast.classList.remove("show");
+          }, 3000);
+        });
+      }
+
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".feature-card, .stat-card").forEach((el) => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(30px)";
+        el.style.transition = "all 0.6s ease";
+        observer.observe(el);
+      });
+
+      let currentStage = 1;
+      const totalStages = 5;
+      let morphInterval;
+
+      function openMysteryPortal() {
+        const portal = document.getElementById("mysteryPortal");
+        if (!portal) return false;
+        portal.style.display = "block";
+        document.body.style.overflow = "hidden";
+        setTimeout(() => {
+          portal.classList.add("active");
+        }, 10);
+        resetPortal();
+        initCanvasAnimation();
+        createPortalEffect();
+        const navMenu = document.getElementById("navMenu");
+        if (navMenu && navMenu.classList.contains("active")) {
+          navMenu.classList.remove("active");
+        }
+        return false;
+      }
+
+      function resetPortal() {
+        currentStage = 1;
+        const entry = document.getElementById("portalEntry");
+        const journey = document.getElementById("mysteryJourney");
+        if (entry) {
+          entry.classList.remove("hidden");
+          entry.style.animation = "";
+        }
+        if (journey) {
+          journey.classList.remove("active");
+        }
+        document.querySelectorAll(".journey-stage").forEach((stage) => {
+          stage.classList.remove("active");
+        });
+        const reveal = document.querySelector(".discovery-reveal");
+        if (reveal) reveal.style.display = "none";
+        if (morphInterval) {
+          clearInterval(morphInterval);
+          morphInterval = null;
+        }
+      }
+
+      function closeMysteryPortal() {
+        const portal = document.getElementById("mysteryPortal");
+        portal.classList.remove("active");
+        setTimeout(() => {
+          portal.style.display = "none";
+          document.body.style.overflow = "auto";
+          resetPortal();
+        }, 300);
+      }
+
+      function enterMystery() {
+        const entry = document.getElementById("portalEntry");
+        const journey = document.getElementById("mysteryJourney");
+        entry.style.animation = "explodeOut 1s ease forwards";
+        setTimeout(() => {
+          entry.classList.add("hidden");
+          journey.classList.add("active");
+          showStage(1);
+          startStageEffects(1);
+        }, 1000);
+      }
+
+      function createPortalEffect() {
+        const effect = document.createElement("div");
+        effect.style.cssText = `position:fixed;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(255,140,0,0.6) 0%,transparent 70%);border-radius:50%;transform:translate(-50%,-50%);z-index:100002;pointer-events:none;animation:portalExpand 1s ease-out forwards;`;
+        document.body.appendChild(effect);
+        setTimeout(() => effect.remove(), 1000);
+      }
+
+      function showStage(stageNum) {
+        document.querySelectorAll(".journey-stage").forEach((stage) => {
+          stage.classList.remove("active");
+        });
+        const currentStageEl = document.getElementById(`stage${stageNum}`);
+        if (currentStageEl) {
+          currentStageEl.classList.add("active");
+        }
+        document.querySelectorAll(".stage-dot").forEach((dot, index) => {
+          dot.classList.toggle("active", index + 1 === stageNum);
+        });
+        currentStage = stageNum;
+        startStageEffects(stageNum);
+      }
+
+      function nextStage() {
+        if (currentStage < totalStages) {
+          showStage(currentStage + 1);
+        }
+      }
+
+      function startStageEffects(stage) {
+        switch (stage) {
+          case 1:
+            setTimeout(() => {
+              const reveal = document.querySelector(".discovery-reveal");
+              if (reveal) reveal.style.display = "block";
+            }, 3000);
+            break;
+          case 2:
+            startMorphAnimation();
+            break;
+          case 3:
+            document.addEventListener("mousemove", moveOracleEye);
+            break;
+          case 4:
+            animatePortalNumbers();
+            break;
+        }
+      }
+
+      function startMorphAnimation() {
+        const morphText = document.getElementById("morphText");
+        if (!morphText) return;
+        let isMorphed = false;
+        morphInterval = setInterval(() => {
+          morphText.textContent = isMorphed ? "$ASTHERUS" : "$ASTER";
+          morphText.style.color = isMorphed ? "#ff9500" : "#ff8c00";
+          isMorphed = !isMorphed;
+        }, 2000);
+      }
+
+      function moveOracleEye(e) {
+        const eye = document.querySelector(".eye-inner");
+        const pupil = document.querySelector(".eye-pupil");
+        if (!eye || !pupil) return;
+        const rect = eye.getBoundingClientRect();
+        const eyeCenterX = rect.left + rect.width / 2;
+        const eyeCenterY = rect.top + rect.height / 2;
+        const angle = Math.atan2(
+          e.clientY - eyeCenterY,
+          e.clientX - eyeCenterX
+        );
+        const distance = Math.min(
+          20,
+          Math.hypot(e.clientX - eyeCenterX, e.clientY - eyeCenterY) / 10
+        );
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+        pupil.style.transform = `translate(${x}px, ${y}px)`;
+      }
+
+      function animatePortalNumbers() {
+        const statValues = document.querySelectorAll(
+          ".journey-stage.active .stat-value"
+        );
+        statValues.forEach((stat) => {
+          const target = parseInt(stat.getAttribute("data-value"));
+          let current = 0;
+          const increment = target / 100;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              current = target;
+              clearInterval(timer);
+            }
+            stat.textContent = Math.floor(current).toLocaleString();
+          }, 30);
+        });
+      }
+
+      function initCanvasAnimation() {
+        const canvas = document.getElementById("mysteryCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const particles = [];
+        const particleCount = 50;
+
+        class Particle {
+          constructor() {
+            this.reset();
+          }
+          reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 3 + 1;
+            this.speedX = (Math.random() - 0.5) * 0.5;
+            this.speedY = (Math.random() - 0.5) * 0.5;
+            this.opacity = Math.random() * 0.5 + 0.2;
+          }
+          update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (
+              this.x < 0 ||
+              this.x > canvas.width ||
+              this.y < 0 ||
+              this.y > canvas.height
+            ) {
+              this.reset();
+            }
+          }
+          draw() {
+            ctx.fillStyle = `rgba(255, 140, 0, ${this.opacity})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(new Particle());
+        }
+
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach((particle) => {
+            particle.update();
+            particle.draw();
+          });
+          requestAnimationFrame(animate);
+        }
+        animate();
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeMysteryPortal();
+        }
+      });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".stage-dot").forEach((dot) => {
+          dot.addEventListener("click", () => {
+            const stage = parseInt(dot.getAttribute("data-stage"));
+            if (stage) showStage(stage);
+          });
+        });
+      });
+
+      const konamiCode = [
+        "ArrowUp",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowRight",
+        "b",
+        "a",
+      ];
+      let konamiIndex = 0;
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === konamiCode[konamiIndex]) {
+          konamiIndex++;
+          if (konamiIndex === konamiCode.length) {
+            activateEasterEgg();
+            konamiIndex = 0;
+          }
+        } else {
+          konamiIndex = 0;
+        }
+      });
+
+      function activateEasterEgg() {
+        document.body.style.animation = "rainbow 2s linear infinite";
+        const easterStyle = document.createElement("style");
+        easterStyle.textContent = `@keyframes rainbow {0% { filter: hue-rotate(0deg); }100% { filter: hue-rotate(360deg); }}`;
+        document.head.appendChild(easterStyle);
+        const message = document.createElement("div");
+        message.style.cssText = `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(45deg,#ff00ff,#00ffff,#ffff00);padding:30px;border-radius:20px;font-size:2em;font-weight:bold;color:white;z-index:100000;animation:pulse 1s ease infinite;`;
+        message.textContent = "🚀 TO THE MOON! 1000X CONFIRMED! 🚀";
+        document.body.appendChild(message);
+        setTimeout(() => {
+          message.remove();
+          document.body.style.animation = "";
+        }, 3000);
+      }
+
+      window.addEventListener("load", () => {
+        const portal = document.getElementById("mysteryPortal");
+        if (portal) {
+          portal.style.display = "none";
+          portal.classList.remove("active");
+        }
+      });
+    </script>
+  </body>
+</html>
